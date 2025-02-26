@@ -1,0 +1,1733 @@
+{
+  "address": "PAR7Gx67378TbfHiL9YfiULbzCtXL1dNkyhPEBFKb7x",
+  "metadata": {
+    "name": "partpay",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "instructions": [
+    {
+      "name": "create_contract",
+      "discriminator": [
+        244,
+        48,
+        244,
+        178,
+        216,
+        88,
+        122,
+        52
+      ],
+      "accounts": [
+        {
+          "name": "contract",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  98,
+                  110,
+                  112,
+                  108,
+                  95,
+                  99,
+                  111,
+                  110,
+                  116,
+                  114,
+                  97,
+                  99,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "buyer"
+              },
+              {
+                "kind": "account",
+                "path": "seller"
+              },
+              {
+                "kind": "account",
+                "path": "equipment"
+              },
+              {
+                "kind": "arg",
+                "path": "contract_unique_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "buyer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "seller"
+        },
+        {
+          "name": "equipment"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "contract_unique_id",
+          "type": "pubkey"
+        },
+        {
+          "name": "total_amount",
+          "type": "u64"
+        },
+        {
+          "name": "duration_seconds",
+          "type": "i64"
+        },
+        {
+          "name": "installment_frequency",
+          "type": "u64"
+        },
+        {
+          "name": "deposit",
+          "type": "u64"
+        },
+        {
+          "name": "insurance_premium",
+          "type": {
+            "option": "u64"
+          }
+        }
+      ]
+    },
+    {
+      "name": "create_marketplace",
+      "discriminator": [
+        6,
+        47,
+        242,
+        139,
+        213,
+        113,
+        5,
+        220
+      ],
+      "accounts": [
+        {
+          "name": "marketplace",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  97,
+                  114,
+                  107,
+                  101,
+                  116,
+                  112,
+                  108,
+                  97,
+                  99,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "authority"
+              }
+            ]
+          }
+        },
+        {
+          "name": "marketplace_collection",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  97,
+                  114,
+                  107,
+                  101,
+                  116,
+                  112,
+                  108,
+                  97,
+                  99,
+                  101,
+                  95,
+                  99,
+                  111,
+                  108,
+                  108,
+                  101,
+                  99,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "marketplace"
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "mpl_core_program",
+          "address": "CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4PZNhX7d"
+        },
+        {
+          "name": "rent",
+          "address": "SysvarRent111111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "uri",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "create_vendor",
+      "discriminator": [
+        32,
+        63,
+        115,
+        119,
+        35,
+        61,
+        109,
+        155
+      ],
+      "accounts": [
+        {
+          "name": "vendor",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  101,
+                  110,
+                  100,
+                  111,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "authority"
+              },
+              {
+                "kind": "arg",
+                "path": "unique_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vendor_collection",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  101,
+                  110,
+                  100,
+                  111,
+                  114,
+                  95,
+                  99,
+                  111,
+                  108,
+                  108,
+                  101,
+                  99,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "vendor"
+              },
+              {
+                "kind": "arg",
+                "path": "collection_unique_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "docs": [
+            "The authority that signs the transaction"
+          ],
+          "signer": true
+        },
+        {
+          "name": "payer",
+          "docs": [
+            "The payer of the transaction fees"
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "mpl_core_program",
+          "address": "CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4PZNhX7d"
+        },
+        {
+          "name": "rent",
+          "address": "SysvarRent111111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "uri",
+          "type": "string"
+        },
+        {
+          "name": "unique_id",
+          "type": "pubkey"
+        },
+        {
+          "name": "collection_unique_id",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "get_all_vendor_equipment",
+      "discriminator": [
+        231,
+        241,
+        214,
+        10,
+        130,
+        4,
+        233,
+        128
+      ],
+      "accounts": [
+        {
+          "name": "vendor"
+        }
+      ],
+      "args": [],
+      "returns": {
+        "defined": {
+          "name": "VendorEquipmentResponse"
+        }
+      }
+    },
+    {
+      "name": "get_contract_status",
+      "discriminator": [
+        122,
+        155,
+        15,
+        34,
+        36,
+        7,
+        165,
+        50
+      ],
+      "accounts": [
+        {
+          "name": "contract"
+        }
+      ],
+      "args": [],
+      "returns": {
+        "defined": {
+          "name": "ContractStatus"
+        }
+      }
+    },
+    {
+      "name": "get_equipment",
+      "discriminator": [
+        38,
+        208,
+        79,
+        149,
+        11,
+        153,
+        97,
+        195
+      ],
+      "accounts": [
+        {
+          "name": "equipment"
+        },
+        {
+          "name": "vendor"
+        }
+      ],
+      "args": [],
+      "returns": {
+        "defined": {
+          "name": "Equipment"
+        }
+      }
+    },
+    {
+      "name": "get_vendor",
+      "discriminator": [
+        65,
+        108,
+        35,
+        15,
+        96,
+        83,
+        147,
+        89
+      ],
+      "accounts": [
+        {
+          "name": "vendor",
+          "writable": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "initialize_borrower",
+      "discriminator": [
+        218,
+        28,
+        44,
+        131,
+        125,
+        58,
+        215,
+        232
+      ],
+      "accounts": [
+        {
+          "name": "borrower",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  98,
+                  111,
+                  114,
+                  114,
+                  111,
+                  119,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "authority"
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "credit_score",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  114,
+                  101,
+                  100,
+                  105,
+                  116,
+                  95,
+                  115,
+                  99,
+                  111,
+                  114,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "borrower"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "make_payment",
+      "discriminator": [
+        19,
+        128,
+        153,
+        121,
+        221,
+        192,
+        91,
+        53
+      ],
+      "accounts": [
+        {
+          "name": "contract",
+          "writable": true
+        },
+        {
+          "name": "equipment",
+          "writable": true
+        },
+        {
+          "name": "buyer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "usdc_mint"
+        },
+        {
+          "name": "buyer_token_account",
+          "writable": true
+        },
+        {
+          "name": "seller_token_account",
+          "writable": true
+        },
+        {
+          "name": "vendor"
+        },
+        {
+          "name": "token_program",
+          "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        }
+      ],
+      "args": [
+        {
+          "name": "payment_amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "sell_equipment",
+      "discriminator": [
+        94,
+        88,
+        204,
+        235,
+        14,
+        37,
+        142,
+        240
+      ],
+      "accounts": [
+        {
+          "name": "equipment",
+          "writable": true
+        },
+        {
+          "name": "vendor",
+          "signer": true,
+          "relations": [
+            "equipment"
+          ]
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "track_repayment",
+      "discriminator": [
+        175,
+        194,
+        248,
+        171,
+        234,
+        88,
+        109,
+        52
+      ],
+      "accounts": [
+        {
+          "name": "borrower",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  98,
+                  111,
+                  114,
+                  114,
+                  111,
+                  119,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "authority"
+              }
+            ]
+          }
+        },
+        {
+          "name": "contract",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  98,
+                  110,
+                  112,
+                  108,
+                  95,
+                  99,
+                  111,
+                  110,
+                  116,
+                  114,
+                  97,
+                  99,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "authority"
+              },
+              {
+                "kind": "account",
+                "path": "vendor"
+              },
+              {
+                "kind": "account",
+                "path": "equipment"
+              },
+              {
+                "kind": "arg",
+                "path": "contract_unique_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vendor"
+        },
+        {
+          "name": "equipment"
+        },
+        {
+          "name": "credit_score",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  114,
+                  101,
+                  100,
+                  105,
+                  116,
+                  95,
+                  115,
+                  99,
+                  111,
+                  114,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "borrower"
+              }
+            ]
+          },
+          "relations": [
+            "borrower"
+          ]
+        },
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "borrower"
+          ]
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        },
+        {
+          "name": "on_time_score",
+          "type": "f64"
+        },
+        {
+          "name": "contract_unique_id",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "update_equipment",
+      "discriminator": [
+        47,
+        212,
+        225,
+        147,
+        96,
+        204,
+        177,
+        12
+      ],
+      "accounts": [
+        {
+          "name": "equipment",
+          "writable": true
+        },
+        {
+          "name": "vendor",
+          "relations": [
+            "equipment"
+          ]
+        },
+        {
+          "name": "authority",
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "name",
+          "type": {
+            "option": "string"
+          }
+        },
+        {
+          "name": "uri",
+          "type": {
+            "option": "string"
+          }
+        },
+        {
+          "name": "price",
+          "type": {
+            "option": "u64"
+          }
+        }
+      ]
+    },
+    {
+      "name": "upload_equipment",
+      "discriminator": [
+        183,
+        46,
+        144,
+        36,
+        181,
+        94,
+        22,
+        46
+      ],
+      "accounts": [
+        {
+          "name": "equipment",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  113,
+                  117,
+                  105,
+                  112,
+                  109,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "vendor"
+              },
+              {
+                "kind": "arg",
+                "path": "unique_id"
+              },
+              {
+                "kind": "arg",
+                "path": "name"
+              }
+            ]
+          }
+        },
+        {
+          "name": "equipment_asset",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  113,
+                  117,
+                  105,
+                  112,
+                  109,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  115,
+                  115,
+                  101,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "equipment"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vendor",
+          "writable": true
+        },
+        {
+          "name": "vendor_collection",
+          "writable": true
+        },
+        {
+          "name": "authority",
+          "signer": true
+        },
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "mpl_core_program",
+          "address": "CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4PZNhX7d"
+        },
+        {
+          "name": "rent",
+          "address": "SysvarRent111111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "uri",
+          "type": "string"
+        },
+        {
+          "name": "price",
+          "type": "u64"
+        },
+        {
+          "name": "quantity",
+          "type": "u64"
+        },
+        {
+          "name": "unique_id",
+          "type": "pubkey"
+        },
+        {
+          "name": "minimum_deposit",
+          "type": "u64"
+        },
+        {
+          "name": "max_duration_seconds",
+          "type": "i64"
+        }
+      ]
+    },
+    {
+      "name": "view_credit_score",
+      "discriminator": [
+        176,
+        65,
+        199,
+        28,
+        12,
+        229,
+        126,
+        7
+      ],
+      "accounts": [
+        {
+          "name": "credit_score",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  114,
+                  101,
+                  100,
+                  105,
+                  116,
+                  95,
+                  115,
+                  99,
+                  111,
+                  114,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "borrower"
+              }
+            ]
+          }
+        },
+        {
+          "name": "borrower"
+        }
+      ],
+      "args": [],
+      "returns": "u64"
+    }
+  ],
+  "accounts": [
+    {
+      "name": "BNPLContract",
+      "discriminator": [
+        154,
+        98,
+        155,
+        16,
+        56,
+        83,
+        206,
+        15
+      ]
+    },
+    {
+      "name": "Borrower",
+      "discriminator": [
+        16,
+        108,
+        79,
+        55,
+        224,
+        190,
+        158,
+        199
+      ]
+    },
+    {
+      "name": "CreditScore",
+      "discriminator": [
+        236,
+        13,
+        61,
+        31,
+        37,
+        3,
+        34,
+        202
+      ]
+    },
+    {
+      "name": "Equipment",
+      "discriminator": [
+        96,
+        101,
+        21,
+        125,
+        255,
+        60,
+        106,
+        143
+      ]
+    },
+    {
+      "name": "Marketplace",
+      "discriminator": [
+        70,
+        222,
+        41,
+        62,
+        78,
+        3,
+        32,
+        174
+      ]
+    },
+    {
+      "name": "Vendor",
+      "discriminator": [
+        87,
+        248,
+        121,
+        239,
+        24,
+        112,
+        197,
+        200
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "UnauthorizedBuyer",
+      "msg": "The provided buyer is not authorized to make this payment"
+    },
+    {
+      "code": 6001,
+      "name": "ContractAlreadyCompleted",
+      "msg": "The contract is already completed"
+    },
+    {
+      "code": 6002,
+      "name": "FailedToCreateCollection",
+      "msg": "Failed to create collection"
+    },
+    {
+      "code": 6003,
+      "name": "ClockUnavailable",
+      "msg": "Clock is unavailable"
+    },
+    {
+      "code": 6004,
+      "name": "InvalidVendor",
+      "msg": "Invalid contract vendor"
+    },
+    {
+      "code": 6005,
+      "name": "InvalidEquipment",
+      "msg": "Failed to mint NFT receipt"
+    },
+    {
+      "code": 6006,
+      "name": "FailedToMintNFT",
+      "msg": "Invalid equipment"
+    },
+    {
+      "code": 6007,
+      "name": "MetaplexError",
+      "msg": "Error invoking Metaplex Core program"
+    },
+    {
+      "code": 6008,
+      "name": "MarketplaceAlreadyExists",
+      "msg": "Marketplace already exists"
+    },
+    {
+      "code": 6009,
+      "name": "InvalidMarketplaceAuthority",
+      "msg": "Invalid Marketplace Authority"
+    },
+    {
+      "code": 6010,
+      "name": "MathOverflow",
+      "msg": "Math operation resulted in overflow"
+    },
+    {
+      "code": 6011,
+      "name": "InvalidPrice",
+      "msg": "Invalid price"
+    },
+    {
+      "code": 6012,
+      "name": "FirstPaymentBelowDeposit",
+      "msg": "First payment must meet the minimum payment"
+    },
+    {
+      "code": 6013,
+      "name": "InvalidDuration",
+      "msg": "Invalid duration"
+    },
+    {
+      "code": 6014,
+      "name": "InvalidInsurancePremium",
+      "msg": "Invalid insurance premium"
+    },
+    {
+      "code": 6015,
+      "name": "EquipmentNotFound",
+      "msg": "Equipment not found"
+    },
+    {
+      "code": 6016,
+      "name": "InvalidEquipmentUpdate",
+      "msg": "Invalid equipment update"
+    },
+    {
+      "code": 6017,
+      "name": "InvalidEquipmentPrice",
+      "msg": "Equipment price must be greater than zero"
+    },
+    {
+      "code": 6018,
+      "name": "InvalidEquipmentName",
+      "msg": "Equipment name must not be empty"
+    },
+    {
+      "code": 6019,
+      "name": "InvalidEquipmentUri",
+      "msg": "Equipment URI must be valid"
+    },
+    {
+      "code": 6020,
+      "name": "UnauthorizedEquipmentUpdate",
+      "msg": "Unauthorized equipment update"
+    },
+    {
+      "code": 6021,
+      "name": "InvalidStringLength",
+      "msg": "String length is invalid"
+    },
+    {
+      "code": 6022,
+      "name": "InvalidUri",
+      "msg": "Invalid URI"
+    },
+    {
+      "code": 6023,
+      "name": "InvalidName",
+      "msg": "Invalid name"
+    },
+    {
+      "code": 6024,
+      "name": "InvalidInstallmentFrequency",
+      "msg": "Invalid installment frequency"
+    },
+    {
+      "code": 6025,
+      "name": "BuyerSignatureRequired",
+      "msg": "The buyer must sign this transaction."
+    },
+    {
+      "code": 6026,
+      "name": "SellerSignatureRequired",
+      "msg": "The seller must sign this transaction."
+    },
+    {
+      "code": 6027,
+      "name": "InvalidPaymentAmount",
+      "msg": "Invalid payment amount"
+    },
+    {
+      "code": 6028,
+      "name": "Overpayment",
+      "msg": "Overpayment"
+    },
+    {
+      "code": 6029,
+      "name": "InvalidTimestamp",
+      "msg": "Invalid timestamp"
+    },
+    {
+      "code": 6030,
+      "name": "InvalidAmount",
+      "msg": "Invalid amount"
+    },
+    {
+      "code": 6031,
+      "name": "BorrowerMismatch",
+      "msg": "Borrower does not match credit score record"
+    },
+    {
+      "code": 6032,
+      "name": "InvalidCreditScorePda",
+      "msg": "Invalid credit score PDA"
+    },
+    {
+      "code": 6033,
+      "name": "InvalidMint",
+      "msg": "Invalid mint"
+    },
+    {
+      "code": 6034,
+      "name": "InvalidSellerTokenAccount",
+      "msg": "Invalid  seller account"
+    },
+    {
+      "code": 6035,
+      "name": "InvalidBuyerTokenAccount",
+      "msg": "Invalid  buyer account"
+    },
+    {
+      "code": 6036,
+      "name": "EquipmentNotAvailable",
+      "msg": "Equipment is not available for sale"
+    },
+    {
+      "code": 6037,
+      "name": "OutOfStock",
+      "msg": "Equipment is out of stock"
+    },
+    {
+      "code": 6038,
+      "name": "NoRemainingQuantity",
+      "msg": "No remaining quantity"
+    },
+    {
+      "code": 6039,
+      "name": "LoanNotFound",
+      "msg": "Loan not found for this borrower"
+    },
+    {
+      "code": 6040,
+      "name": "DepositBelowMinimum",
+      "msg": "Deposit is below the minimum set by the vendor"
+    },
+    {
+      "code": 6041,
+      "name": "DurationExceedsMax",
+      "msg": "Duration exceeds the maximum allowed by the vendor"
+    }
+  ],
+  "types": [
+    {
+      "name": "BNPLContract",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "borrower",
+            "type": "pubkey"
+          },
+          {
+            "name": "vendor",
+            "type": "pubkey"
+          },
+          {
+            "name": "equipment",
+            "type": "pubkey"
+          },
+          {
+            "name": "total_amount",
+            "type": "u64"
+          },
+          {
+            "name": "amount_paid",
+            "type": "u64"
+          },
+          {
+            "name": "deposit",
+            "type": "u64"
+          },
+          {
+            "name": "start_date",
+            "type": "i64"
+          },
+          {
+            "name": "end_date",
+            "type": "i64"
+          },
+          {
+            "name": "contract_unique_id",
+            "type": "pubkey"
+          },
+          {
+            "name": "last_payment_date",
+            "type": "i64"
+          },
+          {
+            "name": "installment_count",
+            "type": "u8"
+          },
+          {
+            "name": "paid_installments",
+            "type": "u8"
+          },
+          {
+            "name": "installment_frequency",
+            "type": {
+              "defined": {
+                "name": "InstallmentFrequency"
+              }
+            }
+          },
+          {
+            "name": "is_completed",
+            "type": "bool"
+          },
+          {
+            "name": "insurance_premium",
+            "type": {
+              "option": "u64"
+            }
+          },
+          {
+            "name": "is_insured",
+            "type": "bool"
+          },
+          {
+            "name": "credit_score_delta",
+            "type": "i8"
+          },
+          {
+            "name": "stablecoin_mint",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Borrower",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "borrower_pubkey",
+            "type": "pubkey"
+          },
+          {
+            "name": "credit_score",
+            "type": "pubkey"
+          },
+          {
+            "name": "total_loans",
+            "type": "u64"
+          },
+          {
+            "name": "total_repayments",
+            "type": "u64"
+          },
+          {
+            "name": "last_repayment_date",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ContractStatus",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "progress",
+            "type": "u8"
+          },
+          {
+            "name": "total_due",
+            "type": "u64"
+          },
+          {
+            "name": "remaining_amount",
+            "type": "u64"
+          },
+          {
+            "name": "time_since_last_payment",
+            "type": "i64"
+          },
+          {
+            "name": "is_payment_overdue",
+            "type": "bool"
+          },
+          {
+            "name": "next_payment_due",
+            "type": "i64"
+          },
+          {
+            "name": "insurance_premium",
+            "type": {
+              "option": "u64"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "CreditScore",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "borrower",
+            "type": "pubkey"
+          },
+          {
+            "name": "on_time_payments",
+            "type": "u32"
+          },
+          {
+            "name": "late_payments",
+            "type": "u32"
+          },
+          {
+            "name": "defaults",
+            "type": "u32"
+          },
+          {
+            "name": "score",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Equipment",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "vendor",
+            "type": "pubkey"
+          },
+          {
+            "name": "asset",
+            "type": "pubkey"
+          },
+          {
+            "name": "unique_id",
+            "type": "pubkey"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "uri",
+            "type": "string"
+          },
+          {
+            "name": "price",
+            "type": "u64"
+          },
+          {
+            "name": "minimum_deposit",
+            "type": "u64"
+          },
+          {
+            "name": "max_duration_seconds",
+            "type": "i64"
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "EquipmentStatus"
+              }
+            }
+          },
+          {
+            "name": "quantity",
+            "type": "u64"
+          },
+          {
+            "name": "sold_count",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "EquipmentInfo",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "price",
+            "type": "u64"
+          },
+          {
+            "name": "uri",
+            "type": "string"
+          },
+          {
+            "name": "asset",
+            "type": "pubkey"
+          },
+          {
+            "name": "index",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "EquipmentStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Available"
+          },
+          {
+            "name": "Sold"
+          },
+          {
+            "name": "Reserved"
+          }
+        ]
+      }
+    },
+    {
+      "name": "InstallmentFrequency",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Daily"
+          },
+          {
+            "name": "Weekly"
+          },
+          {
+            "name": "Monthly"
+          },
+          {
+            "name": "Custom",
+            "fields": [
+              "u64"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "Marketplace",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "collection",
+            "type": "pubkey"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "uri",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Vendor",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "collection",
+            "type": "pubkey"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "uri",
+            "type": "string"
+          },
+          {
+            "name": "marketplace",
+            "type": {
+              "option": "pubkey"
+            }
+          },
+          {
+            "name": "equipments",
+            "type": {
+              "vec": "pubkey"
+            }
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "VendorStatus"
+              }
+            }
+          },
+          {
+            "name": "unique_id",
+            "type": "pubkey"
+          },
+          {
+            "name": "collection_unique_id",
+            "type": "pubkey"
+          },
+          {
+            "name": "equipment_count",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VendorEquipmentResponse",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "total_count",
+            "type": "u64"
+          },
+          {
+            "name": "equipment",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "EquipmentInfo"
+                }
+              }
+            }
+          },
+          {
+            "name": "failed_loads",
+            "type": {
+              "vec": "u64"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "VendorStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Active"
+          },
+          {
+            "name": "Suspended"
+          },
+          {
+            "name": "Deactivated"
+          }
+        ]
+      }
+    }
+  ]
+}
