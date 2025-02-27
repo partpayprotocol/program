@@ -1,8 +1,7 @@
 import { AnchorWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 
-export interface InitializeBorrowerArgs {
+export interface BorrowerArgs {
     wallet: AnchorWallet;
-    borrower: PublicKey;
-    creditScore: PublicKey;
+    buyerPublicKey: PublicKey;
   }
