@@ -4,8 +4,8 @@ import { useConnection } from '@solana/wallet-adapter-react'
 import { Cluster } from '@solana/web3.js'
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
-import { useCluster } from '../../components/cluster/cluster-data-access'
-import { useAnchorProvider } from '../../components/solana/solana-provider'
+import { useCluster } from '../context/cluster-data-access'
+import { useAnchorProvider } from '../context/solana-provider'
 
 export function usePartpayProgram() {
   const { connection } = useConnection()

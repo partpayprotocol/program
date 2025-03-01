@@ -1,8 +1,11 @@
+import { AnchorWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 
 export interface VendorArgs {
-    wallet: { publicKey: PublicKey };
-    name: string;
-    uri: string;
-    additionInfo: any
+    publicKey: PublicKey;
+    metadata: {
+        name: string;
+        image?: string;
+        description?: string
+    }
 }

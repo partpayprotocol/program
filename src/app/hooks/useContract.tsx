@@ -1,5 +1,5 @@
 'use client'
-import { useCluster } from "@/components/cluster/cluster-data-access";
+import { useCluster } from "@/app/context/cluster-data-access";
 import { usePartpayProgram } from "./usePartpayProgram";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -114,7 +114,6 @@ export function useContractAccount() {
                 throw new Error('Wallet not connected');
             }
 
-            // Fetch off-chain contract data from API
             const apiResponse = await axios.get(`${apiUrl}/contracts/borrower/${publicKey.toBase58()}`);
             const offChainData = apiResponse.data;
 

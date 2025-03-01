@@ -2,7 +2,7 @@
 import { Keypair, PublicKey, SystemProgram, SYSVAR_RENT_PUBKEY } from '@solana/web3.js'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
-import { useCluster } from '../../components/cluster/cluster-data-access'
+import { useCluster } from '../context/cluster-data-access'
 import { usePartpayProgram } from './usePartpayProgram'
 import { useWallet } from '@solana/wallet-adapter-react'
 import axios from 'axios'
@@ -16,16 +16,19 @@ export function useVendorAccount() {
 
     const initializeVendor = useMutation({
         mutationKey: ['partpay', 'create-vendor', { cluster }],
-        mutationFn: async ({ wallet, additionInfo, name, uri }: VendorArgs) => {
+        mutationFn: async ({ publicKey, metadata}: VendorArgs) => {
             if (!publicKey || !signTransaction || !connected) {
                 throw new Error('Wallet not connected');
             }
+
+            const response = await axios.get(`${apiUrl}/metadata/upload/${metadata}`);
+            const uri = response.data;
 
             const vendorUniqueId = Keypair.generate().publicKey;
             const vendorCollectionUniqueId = Keypair.generate().publicKey;
 
             const [vendorPDA] = PublicKey.findProgramAddressSync(
-                [Buffer.from("vendor"), wallet.publicKey.toBuffer(), vendorUniqueId.toBuffer()],
+                [Buffer.from("vendor"), publicKey.toBuffer(), vendorUniqueId.toBuffer()],
                 program.programId
             );
             const [collectionPDA] = PublicKey.findProgramAddressSync(
@@ -34,12 +37,12 @@ export function useVendorAccount() {
             );
 
             const txBuilder = await program.methods
-                .createVendor(name, uri, vendorUniqueId, vendorCollectionUniqueId)
+                .createVendor(metadata.name, uri, vendorUniqueId, vendorCollectionUniqueId)
                 .accounts({
                     vendor: vendorPDA,
                     vendorCollection: collectionPDA,
-                    authority: wallet.publicKey,
-                    payer: wallet.publicKey,
+                    authority: publicKey,
+                    payer: publicKey,
                     systemProgram: SystemProgram.programId,
                     mplCoreProgram: MPL_CORE_PROGRAM_ID,
                     rent: SYSVAR_RENT_PUBKEY,
@@ -48,22 +51,22 @@ export function useVendorAccount() {
             const { blockhash } = await program.provider.connection.getLatestBlockhash();
             const tx = await txBuilder.transaction();
             tx.recentBlockhash = blockhash;
-            tx.feePayer = wallet.publicKey;
+            tx.feePayer = publicKey;
 
             const signedTx = await signTransaction(tx);
             const signature = await program.provider.connection.sendRawTransaction(signedTx.serialize());
-            await program.provider.connection.confirmTransaction(signature);
+            await program.provider.connection.confirmTransaction(signature, 'finalized');
 
             const vendorData = {
                 vendorUniqueId: vendorUniqueId.toBase58(),
                 vendorCollectionId: vendorCollectionUniqueId.toBase58(),
                 vendorPda: vendorPDA.toBase58(),
-                vendorPubkey: wallet.publicKey.toBase58(),
+                vendorPubkey: publicKey.toBase58(),
                 collectionPda: collectionPDA.toBase58(),
                 uri,
-                name,
-                authority: wallet.publicKey.toBase58(),
-                additionInfo
+                name: metadata.name,
+                authority: publicKey.toBase58(),
+                additionInfo: metadata
             };
 
             await axios.post(`${apiUrl}/vendors`, vendorData, {

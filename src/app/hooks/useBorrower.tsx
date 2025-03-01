@@ -2,7 +2,7 @@
 import { PublicKey, SystemProgram } from '@solana/web3.js'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
-import { useCluster } from '../../components/cluster/cluster-data-access'
+import { useCluster } from '../context/cluster-data-access'
 import { BorrowerArgs } from '@/app/types/borrower'
 import { usePartpayProgram } from './usePartpayProgram'
 import { useWallet } from '@solana/wallet-adapter-react'
