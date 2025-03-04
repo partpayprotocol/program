@@ -10,14 +10,40 @@ pub struct Equipment {
     pub price: u64,
     pub minimum_deposit: u64,
     pub max_duration_seconds: i64,
-    pub status: EquipmentStatus, 
-    pub quantity: u64,
-    pub sold_count: u64, 
+    pub payment_preference: PaymentPreference,
+    pub total_quantity: u64,
+    pub funded_quantity: u64,
+    pub sold_quantity: u64,
+    pub funded_sold_quantity: u64,
+    pub status: EquipmentStatus,
+    pub funders: Vec<FunderInfo>,
 }
 
-#[derive(Clone, AnchorSerialize, AnchorDeserialize, PartialEq)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone)]
+pub enum PaymentPreference {
+    Part,
+    Full,
+    Both { timeout: i64 },
+}
+
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq)]
 pub enum EquipmentStatus {
     Available,
+    Funded,
+    PartiallySold,
     Sold,
     Reserved,
+}
+
+#[derive(AnchorSerialize, AnchorDeserialize, Clone)]
+pub struct FunderInfo {
+    pub funder: Pubkey,
+    pub quantity: u64,
+    pub minimum_deposit: u64,
+    pub duration_seconds: i64,
+    pub funder_price: u64
+}
+
+impl Equipment {
+    pub const LEN: usize = 8 + 32 + 32 + 32 + (4 + 64) + (4 + 64) + 8 + 8 + 8 + 1 + 8 + (4 + 228);
 }

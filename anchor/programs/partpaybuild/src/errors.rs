@@ -74,8 +74,6 @@ pub enum ErrorCode {
     InvalidSellerTokenAccount,
     #[msg("Invalid  buyer account")]
     InvalidBuyerTokenAccount,
-    #[msg("Equipment is not available for sale")]
-    EquipmentNotAvailable,
     #[msg("Equipment is out of stock")]
     OutOfStock,
     #[msg("No remaining quantity")]
@@ -84,6 +82,20 @@ pub enum ErrorCode {
     LoanNotFound,
     #[msg("Deposit is below the minimum set by the vendor")]
     DepositBelowMinimum,
+    #[msg("Funder price must be greater than or equal to vendor price")]
+    InvalidFunderPrice,
     #[msg("Duration exceeds the maximum allowed by the vendor")]
-    DurationExceedsMax, 
+    DurationExceedsMax,
+    #[msg("Invalid payee")]
+    InvalidPayee,
+    #[msg("Insufficient quantity available")]
+    InsufficientQuantity,
+    #[msg("Failed to transfer tokens")]
+    TokenTransferFailed,
+    #[msg("Invalid contract")]
+    InvalidContract,
+    #[msg("Invalid payment preference")]
+    InvalidPaymentPreference,
+    #[msg("Equipment not available")]
+    EquipmentNotAvailable,
 }

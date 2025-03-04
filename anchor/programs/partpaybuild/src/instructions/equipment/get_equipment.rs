@@ -17,10 +17,14 @@ pub fn get_equipment(ctx: Context<GetEquipment>) -> Result<Equipment> {
         uri: equipment.uri.clone(),
         price: equipment.price,
         status: equipment.status.clone(),
-        quantity: equipment.quantity,
-        sold_count: equipment.sold_count,
+        sold_quantity: equipment.sold_quantity,
+        total_quantity: equipment.total_quantity,
+        funded_sold_quantity: equipment.funded_sold_quantity,
+        funded_quantity: equipment.funded_quantity,
         unique_id: equipment.unique_id,
+        funders: equipment.funders.clone(),
+        payment_preference: equipment.payment_preference.clone(),
         minimum_deposit: equipment.minimum_deposit,
-        max_duration_seconds: equipment.max_duration_seconds
+        max_duration_seconds: equipment.max_duration_seconds,
     })
 }

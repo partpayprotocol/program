@@ -1,84 +1,121 @@
 use anchor_lang::prelude::*;
+use anchor_spl::{
+    associated_token::AssociatedToken,
+    token::{self, Mint, TokenAccount, Token, TransferChecked}
+};
+
 use crate::{
-    state::contract::{BNPLContract, InstallmentFrequency},
-    state::equipment::Equipment,
     constants::CONTRACT_SEED,
-    errors::ErrorCode,
-    utils::validation::{
-        validate_price,
-        validate_duration,
-        validate_insurance_premium,
-        validate_installment_frequency,
+    state::{
+        contract::{BNPLContract, InstallmentFrequency},
+        equipment::{Equipment, EquipmentStatus}
     },
+    errors::ErrorCode,
 };
 
 #[derive(Accounts)]
 #[instruction(
     contract_unique_id: Pubkey,
     total_amount: u64,
-    duration_seconds: i64,
-    installment_frequency: u64,
+    installment_frequency: InstallmentFrequency,
     deposit: u64,
-    insurance_premium: Option<u64>,
+    insurance_premium: Option<u64>
 )]
 pub struct CreateContract<'info> {
     #[account(
         init,
         payer = buyer,
-        space = 8 + BNPLContract::LEN,
-        seeds = [CONTRACT_SEED, buyer.key().as_ref(), seller.key().as_ref(), equipment.key().as_ref(), contract_unique_id.as_ref()],
+        space = BNPLContract::LEN,
+        seeds = [CONTRACT_SEED, buyer.key().as_ref(), equipment.key().as_ref(), contract_unique_id.as_ref()],
         bump
     )]
     pub contract: Account<'info, BNPLContract>,
     #[account(mut)]
-    pub buyer: Signer<'info>,
-    /// CHECK: The seller's account is only stored as a reference.
-    pub seller: AccountInfo<'info>,
-    #[account(constraint = equipment.vendor == seller.key() @ ErrorCode::InvalidEquipment)]
     pub equipment: Account<'info, Equipment>,
+    #[account(mut)]
+    pub buyer: Signer<'info>,
+    pub usdc_mint: Account<'info, Mint>,
+    #[account(mut)]
+    pub buyer_token_account: Account<'info, TokenAccount>,
+    #[account(mut)]
+    pub payee_token_account: Account<'info, TokenAccount>,
+    pub token_program: Program<'info, Token>,
     pub system_program: Program<'info, System>,
+    pub associated_token_program: Program<'info, AssociatedToken>,
 }
 
 pub fn create_contract(
     ctx: Context<CreateContract>,
-    _contract_unique_id: Pubkey,
+    contract_unique_id: Pubkey,
     total_amount: u64,
-    duration_seconds: i64,
-    installment_frequency: u64,
+    installment_frequency: InstallmentFrequency,
     deposit: u64,
     insurance_premium: Option<u64>,
 ) -> Result<()> {
-    msg!("Starting create_contract function");
-
-    validate_price(total_amount)?;
-    validate_duration(duration_seconds)?;
-    validate_installment_frequency(installment_frequency)?;
-    validate_insurance_premium(insurance_premium)?;
-
-    require!(deposit >= ctx.accounts.equipment.minimum_deposit, ErrorCode::DepositBelowMinimum);
-    require!(duration_seconds <= ctx.accounts.equipment.max_duration_seconds, ErrorCode::DurationExceedsMax);
-
-    let clock = Clock::get().map_err(|_| error!(ErrorCode::ClockUnavailable))?;
+    let equipment = &mut ctx.accounts.equipment;
+    let vendor_quantity = equipment.total_quantity - equipment.funded_quantity;
+    require!(
+        equipment.sold_quantity < vendor_quantity || equipment.funded_quantity > equipment.funded_sold_quantity,
+        ErrorCode::OutOfStock
+    );
 
     let contract = &mut ctx.accounts.contract;
-    contract.borrower = ctx.accounts.buyer.key();
-    contract.vendor = ctx.accounts.seller.key();
-    contract.equipment = ctx.accounts.equipment.key();
-    contract.total_amount = total_amount;
-    contract.amount_paid = 0;
-    contract.start_date = clock.unix_timestamp;
-    contract.end_date = clock.unix_timestamp.checked_add(duration_seconds).ok_or(ErrorCode::MathOverflow)?;
-    contract.last_payment_date = clock.unix_timestamp;
-    contract.installment_frequency = match installment_frequency {
-        1 => InstallmentFrequency::Daily,
-        7 => InstallmentFrequency::Weekly,
-        30 => InstallmentFrequency::Monthly,
-        _ => InstallmentFrequency::Custom(installment_frequency),
+    let payee: Pubkey;
+    let min_deposit: u64;
+    let duration: i64;
+    if equipment.funded_quantity > equipment.funded_sold_quantity {
+        let funder_info = equipment.funders.iter_mut().find(|f| f.quantity > 0).unwrap();
+        payee = funder_info.funder;
+        min_deposit = funder_info.minimum_deposit;
+        duration = funder_info.duration_seconds;
+        equipment.funded_sold_quantity += 1;
+    } else {
+        payee = equipment.vendor;
+        min_deposit = equipment.minimum_deposit;
+        duration = equipment.max_duration_seconds;
+        equipment.sold_quantity += 1;
+    }
+    require!(deposit >= min_deposit, ErrorCode::DepositBelowMinimum);
+
+    let cpi_accounts = TransferChecked {
+        from: ctx.accounts.buyer_token_account.to_account_info(),
+        to: ctx.accounts.payee_token_account.to_account_info(),
+        mint: ctx.accounts.usdc_mint.to_account_info(),
+        authority: ctx.accounts.buyer.to_account_info(),
     };
-    contract.is_completed = false;
+    let cpi_program = ctx.accounts.token_program.to_account_info();
+    let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
+    
+    token::transfer_checked(
+        cpi_ctx,
+        deposit,
+        ctx.accounts.usdc_mint.decimals
+    )?;
+
+    contract.borrower = ctx.accounts.buyer.key();
+    contract.payee = payee;
+    contract.equipment = equipment.key();
+    contract.equipment_unit_index = equipment.sold_quantity + equipment.funded_sold_quantity - 1;
+    contract.total_amount = total_amount;
+    contract.amount_paid = deposit;
     contract.deposit = deposit;
+    contract.start_date = Clock::get()?.unix_timestamp;
+    contract.end_date = contract.start_date + duration;
+    contract.contract_unique_id = contract_unique_id;
+    contract.last_payment_date = contract.start_date;
+    contract.installment_count = (duration / installment_frequency.as_seconds()) as u8;
+    contract.paid_installments = 1;
+    contract.installment_frequency = installment_frequency;
+    contract.is_completed = false;
     contract.insurance_premium = insurance_premium;
     contract.is_insured = insurance_premium.is_some();
+    contract.credit_score_delta = 0;
+    contract.stablecoin_mint = ctx.accounts.usdc_mint.key();
 
+    if equipment.sold_quantity == vendor_quantity && equipment.funded_quantity > equipment.funded_sold_quantity {
+        equipment.status = EquipmentStatus::PartiallySold;
+    } else if equipment.sold_quantity + equipment.funded_sold_quantity == equipment.total_quantity {
+        equipment.status = EquipmentStatus::Sold;
+    }
     Ok(())
 }

@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/partpay.json`.
  */
 export type Partpay = {
-  "address": "PAR7Gx67378TbfHiL9YfiULbzCtXL1dNkyhPEBFKb7x",
+  "address": "PARcfURNnk9kGkMieyTHEjsFKbRrnP5eRL7iZW9QqXY",
   "metadata": {
     "name": "partpay",
     "version": "0.1.0",
@@ -55,10 +55,6 @@ export type Partpay = {
               },
               {
                 "kind": "account",
-                "path": "seller"
-              },
-              {
-                "kind": "account",
                 "path": "equipment"
               },
               {
@@ -69,19 +65,36 @@ export type Partpay = {
           }
         },
         {
+          "name": "equipment",
+          "writable": true
+        },
+        {
           "name": "buyer",
           "writable": true,
           "signer": true
         },
         {
-          "name": "seller"
+          "name": "usdcMint"
         },
         {
-          "name": "equipment"
+          "name": "buyerTokenAccount",
+          "writable": true
+        },
+        {
+          "name": "payeeTokenAccount",
+          "writable": true
+        },
+        {
+          "name": "tokenProgram",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
         },
         {
           "name": "systemProgram",
           "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "associatedTokenProgram",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
         }
       ],
       "args": [
@@ -94,12 +107,12 @@ export type Partpay = {
           "type": "u64"
         },
         {
-          "name": "durationSeconds",
-          "type": "i64"
-        },
-        {
           "name": "installmentFrequency",
-          "type": "u64"
+          "type": {
+            "defined": {
+              "name": "installmentFrequency"
+            }
+          }
         },
         {
           "name": "deposit",
@@ -353,6 +366,75 @@ export type Partpay = {
       ]
     },
     {
+      "name": "fundEquipment",
+      "discriminator": [
+        130,
+        5,
+        118,
+        183,
+        5,
+        15,
+        6,
+        79
+      ],
+      "accounts": [
+        {
+          "name": "equipment",
+          "writable": true
+        },
+        {
+          "name": "vendor",
+          "writable": true
+        },
+        {
+          "name": "funder",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "usdcMint"
+        },
+        {
+          "name": "funderTokenAccount",
+          "writable": true
+        },
+        {
+          "name": "vendorTokenAccount",
+          "writable": true
+        },
+        {
+          "name": "tokenProgram",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "associatedTokenProgram",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        }
+      ],
+      "args": [
+        {
+          "name": "quantityToFund",
+          "type": "u64"
+        },
+        {
+          "name": "minimumDeposit",
+          "type": "u64"
+        },
+        {
+          "name": "durationSeconds",
+          "type": "i64"
+        },
+        {
+          "name": "funderPrice",
+          "type": "u64"
+        }
+      ]
+    },
+    {
       "name": "getAllVendorEquipment",
       "discriminator": [
         231,
@@ -424,6 +506,31 @@ export type Partpay = {
       "returns": {
         "defined": {
           "name": "equipment"
+        }
+      }
+    },
+    {
+      "name": "getFunderEquipment",
+      "discriminator": [
+        52,
+        152,
+        123,
+        193,
+        156,
+        171,
+        13,
+        125
+      ],
+      "accounts": [
+        {
+          "name": "funder",
+          "signer": true
+        }
+      ],
+      "args": [],
+      "returns": {
+        "defined": {
+          "name": "funderEquipmentResponse"
         }
       }
     },
@@ -560,7 +667,7 @@ export type Partpay = {
           "writable": true
         },
         {
-          "name": "sellerTokenAccount",
+          "name": "payeeTokenAccount",
           "writable": true
         },
         {
@@ -568,7 +675,7 @@ export type Partpay = {
         },
         {
           "name": "tokenProgram",
-          "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
         },
         {
           "name": "systemProgram",
@@ -587,37 +694,6 @@ export type Partpay = {
       ]
     },
     {
-      "name": "sellEquipment",
-      "discriminator": [
-        94,
-        88,
-        204,
-        235,
-        14,
-        37,
-        142,
-        240
-      ],
-      "accounts": [
-        {
-          "name": "equipment",
-          "writable": true
-        },
-        {
-          "name": "vendor",
-          "signer": true,
-          "relations": [
-            "equipment"
-          ]
-        },
-        {
-          "name": "systemProgram",
-          "address": "11111111111111111111111111111111"
-        }
-      ],
-      "args": []
-    },
-    {
       "name": "trackRepayment",
       "discriminator": [
         175,
@@ -632,70 +708,11 @@ export type Partpay = {
       "accounts": [
         {
           "name": "borrower",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  98,
-                  111,
-                  114,
-                  114,
-                  111,
-                  119,
-                  101,
-                  114
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "authority"
-              }
-            ]
-          }
+          "writable": true
         },
         {
           "name": "contract",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  98,
-                  110,
-                  112,
-                  108,
-                  95,
-                  99,
-                  111,
-                  110,
-                  116,
-                  114,
-                  97,
-                  99,
-                  116
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "authority"
-              },
-              {
-                "kind": "account",
-                "path": "vendor"
-              },
-              {
-                "kind": "account",
-                "path": "equipment"
-              },
-              {
-                "kind": "arg",
-                "path": "contractUniqueId"
-              }
-            ]
-          }
+          "writable": true
         },
         {
           "name": "vendor"
@@ -705,43 +722,12 @@ export type Partpay = {
         },
         {
           "name": "creditScore",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  99,
-                  114,
-                  101,
-                  100,
-                  105,
-                  116,
-                  95,
-                  115,
-                  99,
-                  111,
-                  114,
-                  101
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "borrower"
-              }
-            ]
-          },
-          "relations": [
-            "borrower"
-          ]
+          "writable": true
         },
         {
           "name": "authority",
           "writable": true,
-          "signer": true,
-          "relations": [
-            "borrower"
-          ]
+          "signer": true
         },
         {
           "name": "systemProgram",
@@ -901,6 +887,7 @@ export type Partpay = {
         },
         {
           "name": "authority",
+          "writable": true,
           "signer": true
         },
         {
@@ -935,7 +922,7 @@ export type Partpay = {
           "type": "u64"
         },
         {
-          "name": "quantity",
+          "name": "totalQuantity",
           "type": "u64"
         },
         {
@@ -949,6 +936,14 @@ export type Partpay = {
         {
           "name": "maxDurationSeconds",
           "type": "i64"
+        },
+        {
+          "name": "paymentPreference",
+          "type": {
+            "defined": {
+              "name": "paymentPreference"
+            }
+          }
         }
       ]
     },
@@ -1264,33 +1259,63 @@ export type Partpay = {
     },
     {
       "code": 6036,
-      "name": "equipmentNotAvailable",
-      "msg": "Equipment is not available for sale"
-    },
-    {
-      "code": 6037,
       "name": "outOfStock",
       "msg": "Equipment is out of stock"
     },
     {
-      "code": 6038,
+      "code": 6037,
       "name": "noRemainingQuantity",
       "msg": "No remaining quantity"
     },
     {
-      "code": 6039,
+      "code": 6038,
       "name": "loanNotFound",
       "msg": "Loan not found for this borrower"
     },
     {
-      "code": 6040,
+      "code": 6039,
       "name": "depositBelowMinimum",
       "msg": "Deposit is below the minimum set by the vendor"
+    },
+    {
+      "code": 6040,
+      "name": "invalidFunderPrice",
+      "msg": "Funder price must be greater than or equal to vendor price"
     },
     {
       "code": 6041,
       "name": "durationExceedsMax",
       "msg": "Duration exceeds the maximum allowed by the vendor"
+    },
+    {
+      "code": 6042,
+      "name": "invalidPayee",
+      "msg": "Invalid payee"
+    },
+    {
+      "code": 6043,
+      "name": "insufficientQuantity",
+      "msg": "Insufficient quantity available"
+    },
+    {
+      "code": 6044,
+      "name": "tokenTransferFailed",
+      "msg": "Failed to transfer tokens"
+    },
+    {
+      "code": 6045,
+      "name": "invalidContract",
+      "msg": "Invalid contract"
+    },
+    {
+      "code": 6046,
+      "name": "invalidPaymentPreference",
+      "msg": "Invalid payment preference"
+    },
+    {
+      "code": 6047,
+      "name": "equipmentNotAvailable",
+      "msg": "Equipment not available"
     }
   ],
   "types": [
@@ -1304,12 +1329,16 @@ export type Partpay = {
             "type": "pubkey"
           },
           {
-            "name": "vendor",
+            "name": "payee",
             "type": "pubkey"
           },
           {
             "name": "equipment",
             "type": "pubkey"
+          },
+          {
+            "name": "equipmentUnitIndex",
+            "type": "u64"
           },
           {
             "name": "totalAmount",
@@ -1524,6 +1553,30 @@ export type Partpay = {
             "type": "i64"
           },
           {
+            "name": "paymentPreference",
+            "type": {
+              "defined": {
+                "name": "paymentPreference"
+              }
+            }
+          },
+          {
+            "name": "totalQuantity",
+            "type": "u64"
+          },
+          {
+            "name": "fundedQuantity",
+            "type": "u64"
+          },
+          {
+            "name": "soldQuantity",
+            "type": "u64"
+          },
+          {
+            "name": "fundedSoldQuantity",
+            "type": "u64"
+          },
+          {
             "name": "status",
             "type": {
               "defined": {
@@ -1532,12 +1585,14 @@ export type Partpay = {
             }
           },
           {
-            "name": "quantity",
-            "type": "u64"
-          },
-          {
-            "name": "soldCount",
-            "type": "u64"
+            "name": "funders",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "funderInfo"
+                }
+              }
+            }
           }
         ]
       }
@@ -1579,10 +1634,110 @@ export type Partpay = {
             "name": "available"
           },
           {
+            "name": "funded"
+          },
+          {
+            "name": "partiallySold"
+          },
+          {
             "name": "sold"
           },
           {
             "name": "reserved"
+          }
+        ]
+      }
+    },
+    {
+      "name": "funderEquipmentInfo",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "equipmentPda",
+            "type": "pubkey"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "price",
+            "type": "u64"
+          },
+          {
+            "name": "uri",
+            "type": "string"
+          },
+          {
+            "name": "asset",
+            "type": "pubkey"
+          },
+          {
+            "name": "fundedQuantity",
+            "type": "u64"
+          },
+          {
+            "name": "totalQuantity",
+            "type": "u64"
+          },
+          {
+            "name": "minimumDeposit",
+            "type": "u64"
+          },
+          {
+            "name": "durationSeconds",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "funderEquipmentResponse",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "totalCount",
+            "type": "u64"
+          },
+          {
+            "name": "equipment",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "funderEquipmentInfo"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "funderInfo",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "funder",
+            "type": "pubkey"
+          },
+          {
+            "name": "quantity",
+            "type": "u64"
+          },
+          {
+            "name": "minimumDeposit",
+            "type": "u64"
+          },
+          {
+            "name": "durationSeconds",
+            "type": "i64"
+          },
+          {
+            "name": "funderPrice",
+            "type": "u64"
           }
         ]
       }
@@ -1604,7 +1759,10 @@ export type Partpay = {
           {
             "name": "custom",
             "fields": [
-              "u64"
+              {
+                "name": "seconds",
+                "type": "u64"
+              }
             ]
           }
         ]
@@ -1630,6 +1788,29 @@ export type Partpay = {
           {
             "name": "uri",
             "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "paymentPreference",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "part"
+          },
+          {
+            "name": "full"
+          },
+          {
+            "name": "both",
+            "fields": [
+              {
+                "name": "timeout",
+                "type": "i64"
+              }
+            ]
           }
         ]
       }

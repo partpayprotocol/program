@@ -4,3 +4,4 @@ pub mod borrower;
 pub mod contract;
 pub mod credit_score;
 pub mod equipment;
+pub mod funded;

@@ -20,7 +20,7 @@ export function getPartpayProgramId(cluster: Cluster) {
   switch (cluster) {
     case 'devnet':
     case 'testnet':
-      return new PublicKey('PAR7Gx67378TbfHiL9YfiULbzCtXL1dNkyhPEBFKb7x')
+      return new PublicKey('PARcfURNnk9kGkMieyTHEjsFKbRrnP5eRL7iZW9QqXY')
     case 'mainnet-beta':
     default:
       return PARTPAY_PROGRAM_ID

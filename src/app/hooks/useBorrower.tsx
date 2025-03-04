@@ -87,7 +87,7 @@ export function useBorrowerAccount() {
   };
 }
 
-export function viewBorrowerScore({ buyerPublicKey }: BorrowerArgs) {
+export function ViewBorrowerScore({ buyerPublicKey }: BorrowerArgs) {
   const { program } = usePartpayProgram();
 
   const queryCreditScore = useQuery({

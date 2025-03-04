@@ -1,11 +1,12 @@
 use anchor_lang::prelude::*;
 use state::{
     vendor::VendorEquipmentResponse,
-    contract::ContractStatus,
-    equipment::Equipment,
+    contract::{ContractStatus, InstallmentFrequency},
+    equipment::{Equipment, PaymentPreference},
+    funded::FunderEquipmentResponse
 };
 
-declare_id!("PAR7Gx67378TbfHiL9YfiULbzCtXL1dNkyhPEBFKb7x");
+declare_id!("PARcfURNnk9kGkMieyTHEjsFKbRrnP5eRL7iZW9QqXY");
 
 pub mod constants;
 pub mod errors;
@@ -18,7 +19,6 @@ use instructions::*;
 #[program]
 pub mod partpay {
     use super::*;
-
     pub fn create_marketplace(
         ctx: Context<CreateMarketplace>,
         name: String,
@@ -44,13 +44,23 @@ pub mod partpay {
         name: String,
         uri: String,
         price: u64,
-        quantity: u64,
+        total_quantity: u64,
         unique_id: Pubkey,
         minimum_deposit: u64,
         max_duration_seconds: i64,
+        payment_preference: PaymentPreference,
     ) -> Result<()> {
-        msg!("Starting create_equipment");
-        equipment::upload_equipment(ctx, name, uri, price, quantity, unique_id, minimum_deposit, max_duration_seconds)
+        equipment::upload_equipment(
+            ctx,
+            name,
+            uri,
+            price,
+            total_quantity,
+            unique_id,
+            minimum_deposit,
+            max_duration_seconds,
+            payment_preference,
+        )
     }
 
     pub fn update_equipment(
@@ -74,10 +84,10 @@ pub mod partpay {
         equipment::get_equipment(ctx)
     }
 
-    pub fn sell_equipment(ctx: Context<SellEquipment>) -> Result<()> {
-        msg!("Starting sell_equipment");
-        equipment::sell_equipment(ctx)
-    }
+    // pub fn sell_equipment(ctx: Context<SellEquipment>) -> Result<()> {
+    //     msg!("Starting sell_equipment");
+    //     equipment::sell_equipment(ctx)
+    // }
 
     pub fn initialize_borrower(ctx: Context<InitializeBorrower>) -> Result<()> {
         msg!("Initializing borrower");
@@ -93,18 +103,18 @@ pub mod partpay {
         ctx: Context<CreateContract>,
         contract_unique_id: Pubkey,
         total_amount: u64,
-        duration_seconds: i64,
-        installment_frequency: u64,
+        installment_frequency: InstallmentFrequency,
         deposit: u64,
         insurance_premium: Option<u64>,
     ) -> Result<()> {
-        msg!("Starting create_contract");
-        contract::create_contract(ctx, contract_unique_id, total_amount, duration_seconds, installment_frequency, deposit, insurance_premium)
-    }
-
-    pub fn make_payment(ctx: Context<MakePayment>, payment_amount: u64) -> Result<()> {
-        msg!("Starting make_payment");
-        contract::make_payment(ctx, payment_amount)
+        contract::create_contract(
+            ctx,
+            contract_unique_id,
+            total_amount,
+            installment_frequency,
+            deposit,
+            insurance_premium,
+        )
     }
 
     pub fn get_contract_status(ctx: Context<GetContractStatus>) -> Result<ContractStatus> {
@@ -112,14 +122,41 @@ pub mod partpay {
         contract::get_contract_status(ctx)
     }
 
+    pub fn make_payment(
+        ctx: Context<MakePayment>,
+        payment_amount: u64,
+    ) -> Result<()> {
+        contract::make_payment(ctx, payment_amount)
+    }
+
     pub fn track_repayment(
         ctx: Context<TrackRepayment>,
         amount: u64,
         on_time_score: f64,
-        contract_unique_id: Pubkey
+        contract_unique_id: Pubkey,
     ) -> Result<()> {
-        msg!("Starting track_repayment");
-        borrower::track_repayment(ctx, amount, on_time_score, contract_unique_id)
+        borrower::track_repayment(
+            ctx,
+            amount,
+            on_time_score,
+            contract_unique_id,
+        )
+    }
+
+    pub fn get_funder_equipment<'info>(
+        ctx: Context<'_, '_, 'info, 'info, GetFunderEquipment<'info>>
+    ) -> Result<FunderEquipmentResponse> {
+        equipment::get_funded_equipment(ctx)
+    }
+
+    pub fn fund_equipment(
+        ctx: Context<FundEquipment>,
+        quantity_to_fund: u64,
+        minimum_deposit: u64,
+        duration_seconds: i64,
+        funder_price: u64,
+    ) -> Result<()> {
+        equipment::fund_equipment(ctx, quantity_to_fund, minimum_deposit, duration_seconds, funder_price)
     }
 
     pub fn view_credit_score(ctx: Context<ViewCreditScore>) -> Result<u64> {

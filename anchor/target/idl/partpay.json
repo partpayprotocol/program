@@ -1,5 +1,5 @@
 {
-  "address": "PAR7Gx67378TbfHiL9YfiULbzCtXL1dNkyhPEBFKb7x",
+  "address": "PARcfURNnk9kGkMieyTHEjsFKbRrnP5eRL7iZW9QqXY",
   "metadata": {
     "name": "partpay",
     "version": "0.1.0",
@@ -49,10 +49,6 @@
               },
               {
                 "kind": "account",
-                "path": "seller"
-              },
-              {
-                "kind": "account",
                 "path": "equipment"
               },
               {
@@ -63,19 +59,36 @@
           }
         },
         {
+          "name": "equipment",
+          "writable": true
+        },
+        {
           "name": "buyer",
           "writable": true,
           "signer": true
         },
         {
-          "name": "seller"
+          "name": "usdc_mint"
         },
         {
-          "name": "equipment"
+          "name": "buyer_token_account",
+          "writable": true
+        },
+        {
+          "name": "payee_token_account",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
         },
         {
           "name": "system_program",
           "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
         }
       ],
       "args": [
@@ -88,12 +101,12 @@
           "type": "u64"
         },
         {
-          "name": "duration_seconds",
-          "type": "i64"
-        },
-        {
           "name": "installment_frequency",
-          "type": "u64"
+          "type": {
+            "defined": {
+              "name": "InstallmentFrequency"
+            }
+          }
         },
         {
           "name": "deposit",
@@ -347,6 +360,75 @@
       ]
     },
     {
+      "name": "fund_equipment",
+      "discriminator": [
+        130,
+        5,
+        118,
+        183,
+        5,
+        15,
+        6,
+        79
+      ],
+      "accounts": [
+        {
+          "name": "equipment",
+          "writable": true
+        },
+        {
+          "name": "vendor",
+          "writable": true
+        },
+        {
+          "name": "funder",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "usdc_mint"
+        },
+        {
+          "name": "funder_token_account",
+          "writable": true
+        },
+        {
+          "name": "vendor_token_account",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        }
+      ],
+      "args": [
+        {
+          "name": "quantity_to_fund",
+          "type": "u64"
+        },
+        {
+          "name": "minimum_deposit",
+          "type": "u64"
+        },
+        {
+          "name": "duration_seconds",
+          "type": "i64"
+        },
+        {
+          "name": "funder_price",
+          "type": "u64"
+        }
+      ]
+    },
+    {
       "name": "get_all_vendor_equipment",
       "discriminator": [
         231,
@@ -418,6 +500,31 @@
       "returns": {
         "defined": {
           "name": "Equipment"
+        }
+      }
+    },
+    {
+      "name": "get_funder_equipment",
+      "discriminator": [
+        52,
+        152,
+        123,
+        193,
+        156,
+        171,
+        13,
+        125
+      ],
+      "accounts": [
+        {
+          "name": "funder",
+          "signer": true
+        }
+      ],
+      "args": [],
+      "returns": {
+        "defined": {
+          "name": "FunderEquipmentResponse"
         }
       }
     },
@@ -554,7 +661,7 @@
           "writable": true
         },
         {
-          "name": "seller_token_account",
+          "name": "payee_token_account",
           "writable": true
         },
         {
@@ -562,7 +669,7 @@
         },
         {
           "name": "token_program",
-          "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
         },
         {
           "name": "system_program",
@@ -581,37 +688,6 @@
       ]
     },
     {
-      "name": "sell_equipment",
-      "discriminator": [
-        94,
-        88,
-        204,
-        235,
-        14,
-        37,
-        142,
-        240
-      ],
-      "accounts": [
-        {
-          "name": "equipment",
-          "writable": true
-        },
-        {
-          "name": "vendor",
-          "signer": true,
-          "relations": [
-            "equipment"
-          ]
-        },
-        {
-          "name": "system_program",
-          "address": "11111111111111111111111111111111"
-        }
-      ],
-      "args": []
-    },
-    {
       "name": "track_repayment",
       "discriminator": [
         175,
@@ -626,70 +702,11 @@
       "accounts": [
         {
           "name": "borrower",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  98,
-                  111,
-                  114,
-                  114,
-                  111,
-                  119,
-                  101,
-                  114
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "authority"
-              }
-            ]
-          }
+          "writable": true
         },
         {
           "name": "contract",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  98,
-                  110,
-                  112,
-                  108,
-                  95,
-                  99,
-                  111,
-                  110,
-                  116,
-                  114,
-                  97,
-                  99,
-                  116
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "authority"
-              },
-              {
-                "kind": "account",
-                "path": "vendor"
-              },
-              {
-                "kind": "account",
-                "path": "equipment"
-              },
-              {
-                "kind": "arg",
-                "path": "contract_unique_id"
-              }
-            ]
-          }
+          "writable": true
         },
         {
           "name": "vendor"
@@ -699,43 +716,12 @@
         },
         {
           "name": "credit_score",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  99,
-                  114,
-                  101,
-                  100,
-                  105,
-                  116,
-                  95,
-                  115,
-                  99,
-                  111,
-                  114,
-                  101
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "borrower"
-              }
-            ]
-          },
-          "relations": [
-            "borrower"
-          ]
+          "writable": true
         },
         {
           "name": "authority",
           "writable": true,
-          "signer": true,
-          "relations": [
-            "borrower"
-          ]
+          "signer": true
         },
         {
           "name": "system_program",
@@ -895,6 +881,7 @@
         },
         {
           "name": "authority",
+          "writable": true,
           "signer": true
         },
         {
@@ -929,7 +916,7 @@
           "type": "u64"
         },
         {
-          "name": "quantity",
+          "name": "total_quantity",
           "type": "u64"
         },
         {
@@ -943,6 +930,14 @@
         {
           "name": "max_duration_seconds",
           "type": "i64"
+        },
+        {
+          "name": "payment_preference",
+          "type": {
+            "defined": {
+              "name": "PaymentPreference"
+            }
+          }
         }
       ]
     },
@@ -1258,33 +1253,63 @@
     },
     {
       "code": 6036,
-      "name": "EquipmentNotAvailable",
-      "msg": "Equipment is not available for sale"
-    },
-    {
-      "code": 6037,
       "name": "OutOfStock",
       "msg": "Equipment is out of stock"
     },
     {
-      "code": 6038,
+      "code": 6037,
       "name": "NoRemainingQuantity",
       "msg": "No remaining quantity"
     },
     {
-      "code": 6039,
+      "code": 6038,
       "name": "LoanNotFound",
       "msg": "Loan not found for this borrower"
     },
     {
-      "code": 6040,
+      "code": 6039,
       "name": "DepositBelowMinimum",
       "msg": "Deposit is below the minimum set by the vendor"
+    },
+    {
+      "code": 6040,
+      "name": "InvalidFunderPrice",
+      "msg": "Funder price must be greater than or equal to vendor price"
     },
     {
       "code": 6041,
       "name": "DurationExceedsMax",
       "msg": "Duration exceeds the maximum allowed by the vendor"
+    },
+    {
+      "code": 6042,
+      "name": "InvalidPayee",
+      "msg": "Invalid payee"
+    },
+    {
+      "code": 6043,
+      "name": "InsufficientQuantity",
+      "msg": "Insufficient quantity available"
+    },
+    {
+      "code": 6044,
+      "name": "TokenTransferFailed",
+      "msg": "Failed to transfer tokens"
+    },
+    {
+      "code": 6045,
+      "name": "InvalidContract",
+      "msg": "Invalid contract"
+    },
+    {
+      "code": 6046,
+      "name": "InvalidPaymentPreference",
+      "msg": "Invalid payment preference"
+    },
+    {
+      "code": 6047,
+      "name": "EquipmentNotAvailable",
+      "msg": "Equipment not available"
     }
   ],
   "types": [
@@ -1298,12 +1323,16 @@
             "type": "pubkey"
           },
           {
-            "name": "vendor",
+            "name": "payee",
             "type": "pubkey"
           },
           {
             "name": "equipment",
             "type": "pubkey"
+          },
+          {
+            "name": "equipment_unit_index",
+            "type": "u64"
           },
           {
             "name": "total_amount",
@@ -1518,6 +1547,30 @@
             "type": "i64"
           },
           {
+            "name": "payment_preference",
+            "type": {
+              "defined": {
+                "name": "PaymentPreference"
+              }
+            }
+          },
+          {
+            "name": "total_quantity",
+            "type": "u64"
+          },
+          {
+            "name": "funded_quantity",
+            "type": "u64"
+          },
+          {
+            "name": "sold_quantity",
+            "type": "u64"
+          },
+          {
+            "name": "funded_sold_quantity",
+            "type": "u64"
+          },
+          {
             "name": "status",
             "type": {
               "defined": {
@@ -1526,12 +1579,14 @@
             }
           },
           {
-            "name": "quantity",
-            "type": "u64"
-          },
-          {
-            "name": "sold_count",
-            "type": "u64"
+            "name": "funders",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "FunderInfo"
+                }
+              }
+            }
           }
         ]
       }
@@ -1573,10 +1628,110 @@
             "name": "Available"
           },
           {
+            "name": "Funded"
+          },
+          {
+            "name": "PartiallySold"
+          },
+          {
             "name": "Sold"
           },
           {
             "name": "Reserved"
+          }
+        ]
+      }
+    },
+    {
+      "name": "FunderEquipmentInfo",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "equipment_pda",
+            "type": "pubkey"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "price",
+            "type": "u64"
+          },
+          {
+            "name": "uri",
+            "type": "string"
+          },
+          {
+            "name": "asset",
+            "type": "pubkey"
+          },
+          {
+            "name": "funded_quantity",
+            "type": "u64"
+          },
+          {
+            "name": "total_quantity",
+            "type": "u64"
+          },
+          {
+            "name": "minimum_deposit",
+            "type": "u64"
+          },
+          {
+            "name": "duration_seconds",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "FunderEquipmentResponse",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "total_count",
+            "type": "u64"
+          },
+          {
+            "name": "equipment",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "FunderEquipmentInfo"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "FunderInfo",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "funder",
+            "type": "pubkey"
+          },
+          {
+            "name": "quantity",
+            "type": "u64"
+          },
+          {
+            "name": "minimum_deposit",
+            "type": "u64"
+          },
+          {
+            "name": "duration_seconds",
+            "type": "i64"
+          },
+          {
+            "name": "funder_price",
+            "type": "u64"
           }
         ]
       }
@@ -1598,7 +1753,10 @@
           {
             "name": "Custom",
             "fields": [
-              "u64"
+              {
+                "name": "seconds",
+                "type": "u64"
+              }
             ]
           }
         ]
@@ -1624,6 +1782,29 @@
           {
             "name": "uri",
             "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PaymentPreference",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Part"
+          },
+          {
+            "name": "Full"
+          },
+          {
+            "name": "Both",
+            "fields": [
+              {
+                "name": "timeout",
+                "type": "i64"
+              }
+            ]
           }
         ]
       }

@@ -1,14 +1,16 @@
-'use client'
+'use client';
 import { useCluster } from "@/app/context/cluster-data-access";
 import { usePartpayProgram } from "./usePartpayProgram";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { ContractArgs } from "../types/contract";
 import { PublicKey, SystemProgram } from "@solana/web3.js";
-import * as anchor from '@coral-xyz/anchor'
+import * as anchor from '@coral-xyz/anchor';
 import axios from "axios";
 import { apiUrl } from "../utils/constant";
 import toast from "react-hot-toast";
+import { TOKEN_2022_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import { ensureATA, getInstalmentFrequency } from "../utils/lib";
 
 export function useContractAccount() {
     const { cluster } = useCluster();
@@ -26,6 +28,7 @@ export function useContractAccount() {
             totalAmount,
             durationSeconds,
             installmentFrequency,
+            customFrequencySeconds,
             deposit,
             insurancePremium,
         }: ContractArgs) => {
@@ -37,38 +40,47 @@ export function useContractAccount() {
                 [
                     Buffer.from("bnpl_contract"),
                     buyerPubkey.toBuffer(),
-                    vendorPda.toBuffer(),
                     equipmentPda.toBuffer(),
                     uniqueId.toBuffer(),
                 ],
                 program.programId
             );
 
+            const usdcMint = new PublicKey("4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU");
+            const connection = program.provider.connection;
+            const buyerATA = await ensureATA(connection, { publicKey, signTransaction } as any, usdcMint, buyerPubkey);
+            const payeeATA = await ensureATA(connection, { publicKey, signTransaction } as any, usdcMint, vendorPda);
+
             const txBuilder = await program.methods
                 .createContract(
                     uniqueId,
                     new anchor.BN(totalAmount),
-                    new anchor.BN(durationSeconds),
-                    new anchor.BN(installmentFrequency),
+                    installmentFrequency,
                     new anchor.BN(deposit),
                     insurancePremium ? new anchor.BN(insurancePremium) : null
                 )
                 .accounts({
                     contract: contractPda,
-                    buyer: buyerPubkey,
-                    seller: vendorPda,
                     equipment: equipmentPda,
+                    buyer: buyerPubkey,
+                    usdcMint: usdcMint,
+                    buyerTokenAccount: buyerATA,
+                    payeeTokenAccount: payeeATA,
+                    tokenProgram: TOKEN_PROGRAM_ID,
                     systemProgram: SystemProgram.programId,
+                    associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
                 });
 
-            const { blockhash } = await program.provider.connection.getLatestBlockhash();
+            const { blockhash, lastValidBlockHeight } = await program.provider.connection.getLatestBlockhash();
             const tx = await txBuilder.transaction();
             tx.recentBlockhash = blockhash;
             tx.feePayer = wallet.publicKey;
 
             const signedTx = await signTransaction(tx);
             const signature = await program.provider.connection.sendRawTransaction(signedTx.serialize());
-            await program.provider.connection.confirmTransaction(signature);
+            await program.provider.connection.confirmTransaction({ signature, blockhash, lastValidBlockHeight });
+
+            const {installmentCount, customFrequencyDays, backendFrequency, frequencySeconds } = await getInstalmentFrequency(installmentFrequency, durationSeconds, customFrequencySeconds, )
 
             const contractData = {
                 contractPda: contractPda.toBase58(),
@@ -76,23 +88,24 @@ export function useContractAccount() {
                 vendorPubkey: vendorPda.toBase58(),
                 equipmentPubkey: equipmentPda.toBase58(),
                 contract_unique_id: uniqueId.toBase58(),
-                totalAmount: totalAmount,
-                installmentCount: Math.floor((totalAmount - deposit) / (totalAmount / (durationSeconds / installmentFrequency))),
-                installmentFrequency: installmentFrequency === 7 * 24 * 60 * 60 ? "weekly" : "custom",
+                totalAmount: totalAmount / 1e6,
+                amountPaid: deposit / 1e6,
+                deposit: deposit / 1e6,
                 startDate: new Date().toISOString(),
                 endDate: new Date(Date.now() + durationSeconds * 1000).toISOString(),
-                lastPaymentDate: null,
+                lastPaymentDate: new Date().toISOString(),
+                installmentCount,
                 paidInstallments: 0,
-                amountPaid: 0,
-                deposit: deposit,
-                creditScoreDelta: 0,
+                installmentFrequency: backendFrequency,
+                customFrequency: customFrequencyDays,
+                isCompleted: false,
+                insurancePremium: insurancePremium ? insurancePremium / 1e6 : null,
                 isInsured: !!insurancePremium,
-                stablecoinMint: "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU",
-                insurancePremium: insurancePremium ? insurancePremium / 1e9 : 0,
-                customFrequency: installmentFrequency === 7 * 24 * 60 * 60 ? null : `${installmentFrequency / (24 * 60 * 60)} days`,
+                creditScoreDelta: 0,
+                stablecoinMint: usdcMint.toBase58(),
             };
 
-            await axios.post(`${apiUrl}/contracts`, contractData, {
+            await axios.post(`${apiUrl}/contract`, contractData, {
                 headers: { 'Content-Type': 'application/json' }
             });
 
@@ -100,7 +113,6 @@ export function useContractAccount() {
         },
         onSuccess: (signature) => {
             toast.success("Contract initialized successfully!");
-            // transactionToast(signature);
         },
         onError: (error) => {
             toast.error(`Failed to initialize contract: ${error.message}`);
@@ -118,39 +130,9 @@ export function useContractAccount() {
             const offChainData = apiResponse.data;
 
             const contractPda = new PublicKey(offChainData.contractPda);
-            const vendorPda = new PublicKey(offChainData.vendorPubkey);
-            const equipmentPda = new PublicKey(offChainData.equipmentPubkey);
-            const uniqueId = new PublicKey(offChainData.contract_unique_id);
-
-            const [derivedContractPda] = PublicKey.findProgramAddressSync(
-                [
-                    Buffer.from("bnpl_contract"),
-                    publicKey.toBuffer(),
-                    vendorPda.toBuffer(),
-                    equipmentPda.toBuffer(),
-                    uniqueId.toBuffer(),
-                ],
-                program.programId
-            );
-            if (derivedContractPda.toBase58() !== contractPda.toBase58()) {
-                console.warn('Derived contractPda does not match API data');
-            }
-
             const contractAccount = await program.account.bnplContract.fetch(contractPda);
-
-            const contractStatus = await program.methods
-                .getContractStatus()
-                .accounts({
-                    contract: contractPda,
-                })
-                .view();
-
             return {
-                onChain: {
-                    contractPda: contractPda.toBase58(),
-                    contractAccount,
-                    contractStatus,
-                },
+                onChain: { contractPda: contractPda.toBase58(), contractAccount },
                 offChain: offChainData,
             };
         },
@@ -171,20 +153,9 @@ export function useContractAccount() {
                 contracts.map(async (contract: any) => {
                     const contractPda = new PublicKey(contract.contractPda);
                     const contractAccount = await program.account.bnplContract.fetch(contractPda);
-                    const contractStatus = await program.methods
-                        .getContractStatus()
-                        .accounts({
-                            contract: contractPda,
-                        })
-                        .view();
-
                     return {
                         offChain: contract,
-                        onChain: {
-                            contractPda: contractPda.toBase58(),
-                            contractAccount,
-                            contractStatus,
-                        },
+                        onChain: { contractPda: contractPda.toBase58(), contractAccount },
                     };
                 })
             );

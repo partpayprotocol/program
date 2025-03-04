@@ -21,8 +21,11 @@ export function useVendorAccount() {
                 throw new Error('Wallet not connected');
             }
 
-            const response = await axios.get(`${apiUrl}/metadata/upload/${metadata}`);
-            const uri = response.data;
+            const response = await axios.post(`${apiUrl}/metadata/upload`, metadata);
+            const uri = response.data.uri;
+            console.log("Uri: ", uri)
+
+
 
             const vendorUniqueId = Keypair.generate().publicKey;
             const vendorCollectionUniqueId = Keypair.generate().publicKey;
@@ -36,6 +39,8 @@ export function useVendorAccount() {
                 program.programId
             );
 
+            console.log("cbecuecyhve")
+
             const txBuilder = await program.methods
                 .createVendor(metadata.name, uri, vendorUniqueId, vendorCollectionUniqueId)
                 .accounts({
@@ -48,6 +53,8 @@ export function useVendorAccount() {
                     rent: SYSVAR_RENT_PUBKEY,
                 });
 
+                console.log("testing")
+
             const { blockhash } = await program.provider.connection.getLatestBlockhash();
             const tx = await txBuilder.transaction();
             tx.recentBlockhash = blockhash;
@@ -56,7 +63,7 @@ export function useVendorAccount() {
             const signedTx = await signTransaction(tx);
             const signature = await program.provider.connection.sendRawTransaction(signedTx.serialize());
             await program.provider.connection.confirmTransaction(signature, 'finalized');
-
+            console.log("testing22222")
             const vendorData = {
                 vendorUniqueId: vendorUniqueId.toBase58(),
                 vendorCollectionId: vendorCollectionUniqueId.toBase58(),
@@ -77,10 +84,11 @@ export function useVendorAccount() {
         },
         onSuccess: (signature) => {
             toast.success("Vendor initialized successfully!");
-            transactionToast(signature);
+            // transactionToast(signature);
         },
         onError: (error) => {
             toast.error(`Failed to initialize vendor: ${error.message}`);
+            console.log(error)
         },
     });
 
@@ -103,15 +111,15 @@ export function useVendorAccount() {
     };
 }
 
-// Helper function for transaction notifications
-function transactionToast(signature: string) {
-    const { cluster } = useCluster();
-    toast.success(
-        <div>
-            Transaction successful!{' '}
-            <a href={`https://explorer.solana.com/tx/${signature}?cluster=${cluster.network}`} target="_blank" rel="noopener noreferrer">
-                View on Explorer
-            </a>
-        </div>
-    );
-}
+// // Helper function for transaction notifications
+// function transactionToast(signature: string) {
+//     const { cluster } = useCluster();
+//     toast.success(
+//         <div>
+//             Transaction successful!{' '}
+//             <a href={`https://explorer.solana.com/tx/${signature}?cluster=${cluster.network}`} target="_blank" rel="noopener noreferrer">
+//                 View on Explorer
+//             </a>
+//         </div>
+//     );
+// }

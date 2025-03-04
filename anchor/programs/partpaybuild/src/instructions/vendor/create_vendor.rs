@@ -20,7 +20,7 @@ pub struct CreateVendor<'info> {
     #[account(
         init,
         payer = payer,
-        space = 8 + 32 + 32 + 64 + 64 + 8 + 32 + 32,
+        space = 8 + 500,
         seeds = [VENDOR_SEED, authority.key().as_ref(), unique_id.as_ref()],
         bump
     )]

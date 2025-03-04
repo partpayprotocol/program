@@ -3,8 +3,9 @@ use anchor_lang::prelude::*;
 #[account]
 pub struct BNPLContract {
     pub borrower: Pubkey,
-    pub vendor: Pubkey,
+    pub payee: Pubkey,
     pub equipment: Pubkey,
+    pub equipment_unit_index: u64,
     pub total_amount: u64,
     pub amount_paid: u64,
     pub deposit: u64,
@@ -19,9 +20,12 @@ pub struct BNPLContract {
     pub insurance_premium: Option<u64>,
     pub is_insured: bool,
     pub credit_score_delta: i8,
-    pub stablecoin_mint: Pubkey
+    pub stablecoin_mint: Pubkey,
 }
 
+impl BNPLContract {
+    pub const LEN: usize = 8 + 32 + 32 + 32 + 8 + 8 + 8 + 8 + 8 + 32 + 8 + 1 + 1 + 9 + 1 + 9 + 1 + 32;
+}
 #[derive(AnchorSerialize, AnchorDeserialize)]
 pub struct ContractStatus {
     pub progress: u8,
@@ -33,44 +37,21 @@ pub struct ContractStatus {
     pub insurance_premium: Option<u64>,
 } 
 
-#[derive(Clone, AnchorSerialize, AnchorDeserialize)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq)]
 pub enum InstallmentFrequency {
     Daily,
     Weekly,
-    Monthly,
-    Custom(u64),
+    Monthly, 
+    Custom { seconds: u64 },
 }
 
 impl InstallmentFrequency {
-    pub fn get_duration_seconds(&self) -> i64 {
+    pub fn as_seconds(&self) -> i64 {
         match self {
-            InstallmentFrequency::Daily => 86400,
-            InstallmentFrequency::Weekly => 7 * 86400,
-            InstallmentFrequency::Monthly => 30 * 86400, // Approximate
-            InstallmentFrequency::Custom(days) => *days as i64 * 86400,
+            InstallmentFrequency::Daily => 86_400,
+            InstallmentFrequency::Weekly => 604_800,
+            InstallmentFrequency::Monthly => 2_592_000,
+            InstallmentFrequency::Custom { seconds } => *seconds as i64,
         }
     }
-}
-
-impl BNPLContract {
-    pub const LEN: usize = 8  // Discriminator
-        + 32 // borrower
-        + 32 // vendor
-        + 32 // equipment
-        + 8  // total_amount
-        + 8  // amount_paid
-        + 8  // deposit
-        + 8  // start_date
-        + 8  // end_date
-        + 32 // contract_unique_id
-        + 8  // last_payment_date
-        + 1  // installment_count
-        + 1  // paid_installments
-        + 9  // installment_frequency enum
-        + 1  // is_completed
-        + 9  // insurance_premium (Option<u64>)
-        + 1  // is_insured
-        + 1  // credit_score_delta (i8)
-        + 32 // stablecoin_mint
-        + 16;
 }

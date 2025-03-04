@@ -35,7 +35,9 @@ pub fn get_contract_status(ctx: Context<GetContractStatus>) -> Result<ContractSt
         contract.total_amount
     };
     
-    let remaining_amount = total_due.saturating_sub(contract.amount_paid);
+    let remaining_amount = total_due
+    .checked_sub(contract.amount_paid)
+    .ok_or(ErrorCode::MathOverflow)?;
     let time_since_last_payment = clock
         .unix_timestamp
         .checked_sub(contract.last_payment_date)
@@ -43,7 +45,7 @@ pub fn get_contract_status(ctx: Context<GetContractStatus>) -> Result<ContractSt
         
     let next_payment_due = contract
         .last_payment_date
-        .checked_add(contract.installment_frequency.get_duration_seconds())
+        .checked_add(contract.installment_frequency.as_seconds())
         .ok_or(ErrorCode::MathOverflow)?;
         
     let is_payment_overdue = clock.unix_timestamp > next_payment_due;

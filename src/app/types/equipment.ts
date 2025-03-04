@@ -1,16 +1,24 @@
 import { PublicKey } from "@solana/web3.js";
 
 export interface EquipmentArgs {
-  wallet: { publicKey: PublicKey };
+  publicKey: PublicKey;
   vendorPda: PublicKey;
   vendorCollectionPda: PublicKey;
-  name: string;
-  uri: string;
-  minimumAmount: number;
-  totalAmount: number;
+  metadata: { 
+    name: string; 
+    uri: string 
+    description?: string 
+  };
+  price: number;
+  minimumDeposit: number;
   quantity: number;
   maxDuration: number;
-  paymentPreference: "Part" | "Full" | "Both",
+  paymentPreference:
+  | { part: Record<string, never> }
+  | { full: Record<string, never> }
+  | { both: Record<string, never> };
+  images: string[];
+  video: string|null;
 }
 
 export interface ItemProps {
