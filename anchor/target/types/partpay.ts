@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/partpay.json`.
  */
 export type Partpay = {
-  "address": "PARcfURNnk9kGkMieyTHEjsFKbRrnP5eRL7iZW9QqXY",
+  "address": "PARnAABYT9Kuq3sgokcr4Tyz6FY7DUKpiy2Rjrp3jSh",
   "metadata": {
     "name": "partpay",
     "version": "0.1.0",
@@ -13,6 +13,399 @@ export type Partpay = {
     "description": "Created with Anchor"
   },
   "instructions": [
+    {
+      "name": "confirmDelivery",
+      "discriminator": [
+        11,
+        109,
+        227,
+        53,
+        179,
+        190,
+        88,
+        155
+      ],
+      "accounts": [
+        {
+          "name": "equipment",
+          "writable": true,
+          "relations": [
+            "escrow",
+            "contract"
+          ]
+        },
+        {
+          "name": "escrow",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  115,
+                  99,
+                  114,
+                  111,
+                  119
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "equipment"
+              },
+              {
+                "kind": "account",
+                "path": "borrower"
+              },
+              {
+                "kind": "arg",
+                "path": "uniqueId"
+              }
+            ]
+          },
+          "relations": [
+            "contract"
+          ]
+        },
+        {
+          "name": "escrowTokenAccount",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "escrow"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  6,
+                  221,
+                  246,
+                  225,
+                  215,
+                  101,
+                  161,
+                  147,
+                  217,
+                  203,
+                  225,
+                  70,
+                  206,
+                  235,
+                  121,
+                  172,
+                  28,
+                  180,
+                  133,
+                  237,
+                  95,
+                  91,
+                  55,
+                  145,
+                  58,
+                  140,
+                  245,
+                  133,
+                  126,
+                  255,
+                  0,
+                  169
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "usdcMint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "contract",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  98,
+                  110,
+                  112,
+                  108,
+                  95,
+                  99,
+                  111,
+                  110,
+                  116,
+                  114,
+                  97,
+                  99,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "borrower"
+              },
+              {
+                "kind": "account",
+                "path": "equipment"
+              },
+              {
+                "kind": "arg",
+                "path": "uniqueId"
+              }
+            ]
+          }
+        },
+        {
+          "name": "borrower",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "contract"
+          ]
+        },
+        {
+          "name": "payeeTokenAccount",
+          "writable": true
+        },
+        {
+          "name": "payee"
+        },
+        {
+          "name": "vendor",
+          "relations": [
+            "equipment"
+          ]
+        },
+        {
+          "name": "usdcMint"
+        },
+        {
+          "name": "tokenProgram",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "uniqueId",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "confirmFundedDelivery",
+      "discriminator": [
+        181,
+        94,
+        145,
+        186,
+        237,
+        179,
+        243,
+        28
+      ],
+      "accounts": [
+        {
+          "name": "equipment",
+          "writable": true,
+          "relations": [
+            "escrow"
+          ]
+        },
+        {
+          "name": "escrow",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  115,
+                  99,
+                  114,
+                  111,
+                  119
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "equipment"
+              },
+              {
+                "kind": "account",
+                "path": "confirmer"
+              },
+              {
+                "kind": "arg",
+                "path": "uniqueId"
+              }
+            ]
+          }
+        },
+        {
+          "name": "escrowTokenAccount",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "escrow"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  6,
+                  221,
+                  246,
+                  225,
+                  215,
+                  101,
+                  161,
+                  147,
+                  217,
+                  203,
+                  225,
+                  70,
+                  206,
+                  235,
+                  121,
+                  172,
+                  28,
+                  180,
+                  133,
+                  237,
+                  95,
+                  91,
+                  55,
+                  145,
+                  58,
+                  140,
+                  245,
+                  133,
+                  126,
+                  255,
+                  0,
+                  169
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "usdcMint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "confirmer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "payeeTokenAccount",
+          "writable": true
+        },
+        {
+          "name": "payee"
+        },
+        {
+          "name": "vendor",
+          "relations": [
+            "equipment"
+          ]
+        },
+        {
+          "name": "usdcMint"
+        },
+        {
+          "name": "tokenProgram",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "uniqueId",
+          "type": "pubkey"
+        }
+      ]
+    },
     {
       "name": "createContract",
       "discriminator": [
@@ -81,8 +474,132 @@ export type Partpay = {
           "writable": true
         },
         {
+          "name": "escrow",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  115,
+                  99,
+                  114,
+                  111,
+                  119
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "equipment"
+              },
+              {
+                "kind": "account",
+                "path": "buyer"
+              },
+              {
+                "kind": "arg",
+                "path": "contractUniqueId"
+              }
+            ]
+          }
+        },
+        {
+          "name": "escrowTokenAccount",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "escrow"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  6,
+                  221,
+                  246,
+                  225,
+                  215,
+                  101,
+                  161,
+                  147,
+                  217,
+                  203,
+                  225,
+                  70,
+                  206,
+                  235,
+                  121,
+                  172,
+                  28,
+                  180,
+                  133,
+                  237,
+                  95,
+                  91,
+                  55,
+                  145,
+                  58,
+                  140,
+                  245,
+                  133,
+                  126,
+                  255,
+                  0,
+                  169
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "usdcMint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
           "name": "payeeTokenAccount",
           "writable": true
+        },
+        {
+          "name": "payee"
         },
         {
           "name": "tokenProgram",
@@ -122,6 +639,12 @@ export type Partpay = {
           "name": "insurancePremium",
           "type": {
             "option": "u64"
+          }
+        },
+        {
+          "name": "funderUniqueId",
+          "type": {
+            "option": "pubkey"
           }
         }
       ]
@@ -366,18 +889,139 @@ export type Partpay = {
       ]
     },
     {
-      "name": "fundEquipment",
+      "name": "fundEquipmentForBorrowerNoPayment",
       "discriminator": [
-        130,
-        5,
-        118,
-        183,
-        5,
-        15,
-        6,
-        79
+        252,
+        235,
+        49,
+        221,
+        155,
+        229,
+        108,
+        65
       ],
       "accounts": [
+        {
+          "name": "escrow",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  115,
+                  99,
+                  114,
+                  111,
+                  119
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "equipment"
+              },
+              {
+                "kind": "arg",
+                "path": "borrower"
+              },
+              {
+                "kind": "arg",
+                "path": "uniqueId"
+              }
+            ]
+          }
+        },
+        {
+          "name": "escrowTokenAccount",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "escrow"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  6,
+                  221,
+                  246,
+                  225,
+                  215,
+                  101,
+                  161,
+                  147,
+                  217,
+                  203,
+                  225,
+                  70,
+                  206,
+                  235,
+                  121,
+                  172,
+                  28,
+                  180,
+                  133,
+                  237,
+                  95,
+                  91,
+                  55,
+                  145,
+                  58,
+                  140,
+                  245,
+                  133,
+                  126,
+                  255,
+                  0,
+                  169
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "usdcMint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
         {
           "name": "equipment",
           "writable": true
@@ -421,6 +1065,196 @@ export type Partpay = {
           "type": "u64"
         },
         {
+          "name": "borrower",
+          "type": "pubkey"
+        },
+        {
+          "name": "uniqueId",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "fundEquipmentForBorrowerWithPayment",
+      "discriminator": [
+        134,
+        189,
+        214,
+        82,
+        55,
+        82,
+        76,
+        148
+      ],
+      "accounts": [
+        {
+          "name": "escrow",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  115,
+                  99,
+                  114,
+                  111,
+                  119
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "equipment"
+              },
+              {
+                "kind": "arg",
+                "path": "borrower"
+              },
+              {
+                "kind": "arg",
+                "path": "uniqueId"
+              }
+            ]
+          }
+        },
+        {
+          "name": "escrowTokenAccount",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "escrow"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  6,
+                  221,
+                  246,
+                  225,
+                  215,
+                  101,
+                  161,
+                  147,
+                  217,
+                  203,
+                  225,
+                  70,
+                  206,
+                  235,
+                  121,
+                  172,
+                  28,
+                  180,
+                  133,
+                  237,
+                  95,
+                  91,
+                  55,
+                  145,
+                  58,
+                  140,
+                  245,
+                  133,
+                  126,
+                  255,
+                  0,
+                  169
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "usdcMint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "equipment",
+          "writable": true
+        },
+        {
+          "name": "vendor",
+          "writable": true
+        },
+        {
+          "name": "funder",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "usdcMint"
+        },
+        {
+          "name": "funderTokenAccount",
+          "writable": true
+        },
+        {
+          "name": "vendorTokenAccount",
+          "writable": true
+        },
+        {
+          "name": "tokenProgram",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "associatedTokenProgram",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        }
+      ],
+      "args": [
+        {
+          "name": "quantityToFund",
+          "type": "u64"
+        },
+        {
+          "name": "borrower",
+          "type": "pubkey"
+        },
+        {
           "name": "minimumDeposit",
           "type": "u64"
         },
@@ -429,8 +1263,194 @@ export type Partpay = {
           "type": "i64"
         },
         {
-          "name": "funderPrice",
+          "name": "uniqueId",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "fundEquipmentForListing",
+      "discriminator": [
+        47,
+        200,
+        43,
+        230,
+        255,
+        96,
+        79,
+        56
+      ],
+      "accounts": [
+        {
+          "name": "escrow",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  115,
+                  99,
+                  114,
+                  111,
+                  119
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "equipment"
+              },
+              {
+                "kind": "account",
+                "path": "funder"
+              },
+              {
+                "kind": "arg",
+                "path": "uniqueId"
+              }
+            ]
+          }
+        },
+        {
+          "name": "escrowTokenAccount",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "escrow"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  6,
+                  221,
+                  246,
+                  225,
+                  215,
+                  101,
+                  161,
+                  147,
+                  217,
+                  203,
+                  225,
+                  70,
+                  206,
+                  235,
+                  121,
+                  172,
+                  28,
+                  180,
+                  133,
+                  237,
+                  95,
+                  91,
+                  55,
+                  145,
+                  58,
+                  140,
+                  245,
+                  133,
+                  126,
+                  255,
+                  0,
+                  169
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "usdcMint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "equipment",
+          "writable": true
+        },
+        {
+          "name": "vendor",
+          "writable": true
+        },
+        {
+          "name": "funder",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "usdcMint"
+        },
+        {
+          "name": "funderTokenAccount",
+          "writable": true
+        },
+        {
+          "name": "tokenProgram",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "associatedTokenProgram",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        }
+      ],
+      "args": [
+        {
+          "name": "quantityToFund",
           "type": "u64"
+        },
+        {
+          "name": "minimumDeposit",
+          "type": "u64"
+        },
+        {
+          "name": "durationSeconds",
+          "type": "i64"
+        },
+        {
+          "name": "uniqueId",
+          "type": "pubkey"
         }
       ]
     },
@@ -1050,6 +2070,19 @@ export type Partpay = {
       ]
     },
     {
+      "name": "escrow",
+      "discriminator": [
+        31,
+        213,
+        123,
+        187,
+        186,
+        22,
+        218,
+        155
+      ]
+    },
+    {
       "name": "marketplace",
       "discriminator": [
         70,
@@ -1279,43 +2312,93 @@ export type Partpay = {
     },
     {
       "code": 6040,
-      "name": "invalidFunderPrice",
-      "msg": "Funder price must be greater than or equal to vendor price"
-    },
-    {
-      "code": 6041,
       "name": "durationExceedsMax",
       "msg": "Duration exceeds the maximum allowed by the vendor"
     },
     {
-      "code": 6042,
+      "code": 6041,
       "name": "invalidPayee",
       "msg": "Invalid payee"
     },
     {
-      "code": 6043,
+      "code": 6042,
       "name": "insufficientQuantity",
       "msg": "Insufficient quantity available"
     },
     {
-      "code": 6044,
+      "code": 6043,
       "name": "tokenTransferFailed",
       "msg": "Failed to transfer tokens"
     },
     {
-      "code": 6045,
+      "code": 6044,
       "name": "invalidContract",
       "msg": "Invalid contract"
     },
     {
+      "code": 6045,
+      "name": "invalidEscrow",
+      "msg": "Invalid escrow"
+    },
+    {
       "code": 6046,
+      "name": "invalidFrequency",
+      "msg": "Invalid frequency. should greater than 0"
+    },
+    {
+      "code": 6047,
+      "name": "tooManyInstallments",
+      "msg": "Too many instalment plan"
+    },
+    {
+      "code": 6048,
       "name": "invalidPaymentPreference",
       "msg": "Invalid payment preference"
     },
     {
-      "code": 6047,
+      "code": 6049,
+      "name": "noAvailableFunder",
+      "msg": "Funder doesn't exist"
+    },
+    {
+      "code": 6050,
+      "name": "invalidTokenAccount",
+      "msg": "Invalid token account"
+    },
+    {
+      "code": 6051,
+      "name": "invalidTokenOwner",
+      "msg": "Invalid token owner"
+    },
+    {
+      "code": 6052,
       "name": "equipmentNotAvailable",
       "msg": "Equipment not available"
+    },
+    {
+      "code": 6053,
+      "name": "fundsAlreadyReleased",
+      "msg": "Funds have already been released from escrow"
+    },
+    {
+      "code": 6054,
+      "name": "invalidDeliveryStatus",
+      "msg": "Invalid delivery status for confirmation"
+    },
+    {
+      "code": 6055,
+      "name": "missingFunderUniqueId",
+      "msg": "Funder unique ID is required for funded equipment"
+    },
+    {
+      "code": 6056,
+      "name": "noFundedUnitsAvailable",
+      "msg": "No Funder Find"
+    },
+    {
+      "code": 6057,
+      "name": "unauthorized",
+      "msg": "Unauthorized action"
     }
   ],
   "types": [
@@ -1404,6 +2487,10 @@ export type Partpay = {
           },
           {
             "name": "stablecoinMint",
+            "type": "pubkey"
+          },
+          {
+            "name": "escrow",
             "type": "pubkey"
           }
         ]
@@ -1516,6 +2603,26 @@ export type Partpay = {
       }
     },
     {
+      "name": "deliveryStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "pending"
+          },
+          {
+            "name": "shipped"
+          },
+          {
+            "name": "delivered"
+          },
+          {
+            "name": "disputed"
+          }
+        ]
+      }
+    },
+    {
       "name": "equipment",
       "type": {
         "kind": "struct",
@@ -1593,6 +2700,14 @@ export type Partpay = {
                 }
               }
             }
+          },
+          {
+            "name": "deliveryStatus",
+            "type": {
+              "defined": {
+                "name": "deliveryStatus"
+              }
+            }
           }
         ]
       }
@@ -1644,6 +2759,38 @@ export type Partpay = {
           },
           {
             "name": "reserved"
+          }
+        ]
+      }
+    },
+    {
+      "name": "escrow",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "equipment",
+            "type": "pubkey"
+          },
+          {
+            "name": "funder",
+            "type": "pubkey"
+          },
+          {
+            "name": "vendor",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "isReleased",
+            "type": "bool"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
           }
         ]
       }
@@ -1736,8 +2883,14 @@ export type Partpay = {
             "type": "i64"
           },
           {
-            "name": "funderPrice",
-            "type": "u64"
+            "name": "borrower",
+            "type": {
+              "option": "pubkey"
+            }
+          },
+          {
+            "name": "escrow",
+            "type": "pubkey"
           }
         ]
       }

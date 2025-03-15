@@ -21,10 +21,31 @@ pub struct BNPLContract {
     pub is_insured: bool,
     pub credit_score_delta: i8,
     pub stablecoin_mint: Pubkey,
+    pub escrow: Pubkey,
 }
 
 impl BNPLContract {
-    pub const LEN: usize = 8 + 32 + 32 + 32 + 8 + 8 + 8 + 8 + 8 + 32 + 8 + 1 + 1 + 9 + 1 + 9 + 1 + 32;
+    pub const LEN: usize = 8 + // Discriminator
+        32 + // borrower
+        32 + // payee
+        32 + // equipment
+        8 +  // equipment_unit_index
+        8 +  // total_amount
+        8 +  // amount_paid
+        8 +  // deposit
+        8 +  // start_date
+        8 +  // end_date
+        32 + // contract_unique_id
+        8 +  // last_payment_date
+        1 +  // installment_count
+        1 +  // paid_installments
+        9 +  // installment_frequency (1 tag + 8 payload)
+        1 +  // is_completed
+        9 +  // insurance_premium (1 tag + 8 u64)
+        1 +  // is_insured
+        1 +  // credit_score_delta
+        32 + // stablecoin_mint
+        32; 
 }
 #[derive(AnchorSerialize, AnchorDeserialize)]
 pub struct ContractStatus {

@@ -6,7 +6,7 @@ resolution = true
 skip-lint = false
 
 [programs.devnet]
-partpaybuild = "PARcfURNnk9kGkMieyTHEjsFKbRrnP5eRL7iZW9QqXY"
+partpaybuild = "PARnAABYT9Kuq3sgokcr4Tyz6FY7DUKpiy2Rjrp3jSh"
 
 [registry]
 url = "https://api.apr.dev"

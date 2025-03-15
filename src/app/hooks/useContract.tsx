@@ -7,7 +7,7 @@ import { ContractArgs } from "../types/contract";
 import { PublicKey, SystemProgram } from "@solana/web3.js";
 import * as anchor from '@coral-xyz/anchor';
 import axios from "axios";
-import { apiUrl } from "../utils/constant";
+import { apiUrl, USDC_MINT } from "../utils/constant";
 import toast from "react-hot-toast";
 import { TOKEN_2022_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { ensureATA, getInstalmentFrequency } from "../utils/lib";
@@ -31,6 +31,7 @@ export function useContractAccount() {
             customFrequencySeconds,
             deposit,
             insurancePremium,
+            funder
         }: ContractArgs) => {
             if (!publicKey || !signTransaction || !connected) {
                 throw new Error('Wallet not connected');
@@ -46,10 +47,20 @@ export function useContractAccount() {
                 program.programId
             );
 
-            const usdcMint = new PublicKey("4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU");
+            const [escrowPda] = PublicKey.findProgramAddressSync(
+                [Buffer.from("escrow"), equipmentPda.toBuffer(), publicKey.toBuffer(), uniqueId.toBuffer()],
+                program.programId
+            );
+
             const connection = program.provider.connection;
-            const buyerATA = await ensureATA(connection, { publicKey, signTransaction } as any, usdcMint, buyerPubkey);
-            const payeeATA = await ensureATA(connection, { publicKey, signTransaction } as any, usdcMint, vendorPda);
+            const buyerATA = await ensureATA(connection, { publicKey, signTransaction } as any, USDC_MINT, buyerPubkey);
+            const payeeATA = funder ? await ensureATA(connection, { publicKey, signTransaction } as any, USDC_MINT, funder) : await ensureATA(connection, { publicKey, signTransaction } as any, USDC_MINT, vendorPda);
+            const escrowATA = await ensureATA(connection, { publicKey, signTransaction } as any, USDC_MINT, escrowPda);
+
+            const buyerBalance = await connection.getTokenAccountBalance(buyerATA);
+            if (buyerBalance && buyerBalance.value?.uiAmount < 20) {
+                throw new Error("Buyer needs at least 20 USDC");
+            }
 
             const txBuilder = await program.methods
                 .createContract(
@@ -57,15 +68,19 @@ export function useContractAccount() {
                     new anchor.BN(totalAmount),
                     installmentFrequency,
                     new anchor.BN(deposit),
-                    insurancePremium ? new anchor.BN(insurancePremium) : null
+                    insurancePremium ? new anchor.BN(insurancePremium) : null,
+                    funder ? new PublicKey(funder) : null
                 )
                 .accounts({
                     contract: contractPda,
                     equipment: equipmentPda,
                     buyer: buyerPubkey,
-                    usdcMint: usdcMint,
+                    usdcMint: USDC_MINT,
                     buyerTokenAccount: buyerATA,
+                    escrow: escrowPda,
+                    escrowTokenAccount: escrowATA,
                     payeeTokenAccount: payeeATA,
+                    payee: funder ? funder : vendorPda,
                     tokenProgram: TOKEN_PROGRAM_ID,
                     systemProgram: SystemProgram.programId,
                     associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
@@ -80,7 +95,7 @@ export function useContractAccount() {
             const signature = await program.provider.connection.sendRawTransaction(signedTx.serialize());
             await program.provider.connection.confirmTransaction({ signature, blockhash, lastValidBlockHeight });
 
-            const {installmentCount, customFrequencyDays, backendFrequency, frequencySeconds } = await getInstalmentFrequency(installmentFrequency, durationSeconds, customFrequencySeconds, )
+            const { installmentCount, customFrequencyDays, backendFrequency, frequencySeconds } = await getInstalmentFrequency(installmentFrequency, durationSeconds, customFrequencySeconds,)
 
             const contractData = {
                 contractPda: contractPda.toBase58(),
@@ -95,6 +110,8 @@ export function useContractAccount() {
                 endDate: new Date(Date.now() + durationSeconds * 1000).toISOString(),
                 lastPaymentDate: new Date().toISOString(),
                 installmentCount,
+                escrow: escrowPda,
+                funder,
                 paidInstallments: 0,
                 installmentFrequency: backendFrequency,
                 customFrequency: customFrequencyDays,
@@ -102,7 +119,8 @@ export function useContractAccount() {
                 insurancePremium: insurancePremium ? insurancePremium / 1e6 : null,
                 isInsured: !!insurancePremium,
                 creditScoreDelta: 0,
-                stablecoinMint: usdcMint.toBase58(),
+                stablecoinMint: USDC_MINT.toBase58(),
+                signature
             };
 
             await axios.post(`${apiUrl}/contract`, contractData, {

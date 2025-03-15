@@ -82,8 +82,6 @@ pub enum ErrorCode {
     LoanNotFound,
     #[msg("Deposit is below the minimum set by the vendor")]
     DepositBelowMinimum,
-    #[msg("Funder price must be greater than or equal to vendor price")]
-    InvalidFunderPrice,
     #[msg("Duration exceeds the maximum allowed by the vendor")]
     DurationExceedsMax,
     #[msg("Invalid payee")]
@@ -94,8 +92,30 @@ pub enum ErrorCode {
     TokenTransferFailed,
     #[msg("Invalid contract")]
     InvalidContract,
+    #[msg("Invalid escrow")]
+    InvalidEscrow,
+    #[msg("Invalid frequency. should greater than 0")]
+    InvalidFrequency,
+    #[msg("Too many instalment plan")]
+    TooManyInstallments,
     #[msg("Invalid payment preference")]
     InvalidPaymentPreference,
+    #[msg("Funder doesn't exist")]
+    NoAvailableFunder,
+    #[msg("Invalid token account")]
+    InvalidTokenAccount,
+    #[msg("Invalid token owner")]
+    InvalidTokenOwner,
     #[msg("Equipment not available")]
     EquipmentNotAvailable,
+    #[msg("Funds have already been released from escrow")]
+    FundsAlreadyReleased,
+    #[msg("Invalid delivery status for confirmation")]
+    InvalidDeliveryStatus, 
+    #[msg("Funder unique ID is required for funded equipment")]
+    MissingFunderUniqueId,
+    #[msg("No Funder Find")]
+    NoFundedUnitsAvailable,
+    #[msg("Unauthorized action")]
+    Unauthorized,
 }

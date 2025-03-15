@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token::AssociatedToken,
-    token::{self, Mint, TokenAccount, Token, TransferChecked}
+    token::{Mint, Token, TokenAccount, Transfer},
 };
 use crate::{
     state::{contract::BNPLContract, equipment::Equipment, vendor::Vendor},
@@ -43,19 +43,16 @@ pub fn make_payment(ctx: Context<MakePayment>, payment_amount: u64) -> Result<()
     let remaining_amount = contract.total_amount - contract.amount_paid;
     require!(payment_amount <= remaining_amount, ErrorCode::Overpayment);
 
-    let cpi_accounts = TransferChecked {
-        from: ctx.accounts.buyer_token_account.to_account_info(),
-        to: ctx.accounts.payee_token_account.to_account_info(),
-        mint: ctx.accounts.usdc_mint.to_account_info(),
-        authority: ctx.accounts.buyer.to_account_info(),
-    };
-    let cpi_program = ctx.accounts.token_program.to_account_info();
-    let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
-    
-    token::transfer_checked(
-        cpi_ctx,
+    anchor_spl::token::transfer(
+        CpiContext::new(
+            ctx.accounts.token_program.to_account_info(),
+            Transfer {
+                from: ctx.accounts.buyer_token_account.to_account_info(),
+                to: ctx.accounts.payee_token_account.to_account_info(),
+                authority: ctx.accounts.buyer.to_account_info(),
+            },
+        ),
         payment_amount,
-        ctx.accounts.usdc_mint.decimals
     )?;
 
     contract.amount_paid += payment_amount;

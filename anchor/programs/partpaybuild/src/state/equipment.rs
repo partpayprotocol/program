@@ -16,7 +16,8 @@ pub struct Equipment {
     pub sold_quantity: u64,
     pub funded_sold_quantity: u64,
     pub status: EquipmentStatus,
-    pub funders: Vec<FunderInfo>,
+    pub funders: Vec<Box<FunderInfo>>,
+    pub delivery_status: DeliveryStatus,
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone)]
@@ -41,9 +42,17 @@ pub struct FunderInfo {
     pub quantity: u64,
     pub minimum_deposit: u64,
     pub duration_seconds: i64,
-    pub funder_price: u64
+    pub borrower: Option<Pubkey>,
+    pub escrow: Pubkey,
+}
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq)]
+pub enum DeliveryStatus {
+    Pending,
+    Shipped,
+    Delivered,
+    Disputed,
 }
 
 impl Equipment {
-    pub const LEN: usize = 8 + 32 + 32 + 32 + (4 + 64) + (4 + 64) + 8 + 8 + 8 + 1 + 8 + (4 + 228);
+    pub const LEN: usize = 8 + 32 + 32 + 32 + (4 + 64) + (4 + 128) + 8 + 8 + 8 + 9 + 8 + 8 + 8 + 8 + 1 + (4 + 32 * 10) + 1;
 }

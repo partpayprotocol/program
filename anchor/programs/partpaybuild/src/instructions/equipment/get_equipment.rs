@@ -26,5 +26,6 @@ pub fn get_equipment(ctx: Context<GetEquipment>) -> Result<Equipment> {
         payment_preference: equipment.payment_preference.clone(),
         minimum_deposit: equipment.minimum_deposit,
         max_duration_seconds: equipment.max_duration_seconds,
+        delivery_status: equipment.delivery_status.clone(),
     })
 }

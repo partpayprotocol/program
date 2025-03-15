@@ -21,7 +21,7 @@ pub struct InitializeBorrower<'info> {
         seeds = [CreditScore::SEED_PREFIX, borrower.key().as_ref()],
         bump,
         payer = authority,
-        space = 8 + 32 + 4 + 4 + 4 + 8 + 1
+        space = 8 + 32 + 4 + 4 + 4 + 8 + 1 // 61 bytes
     )]
     pub credit_score: Account<'info, CreditScore>,
     pub system_program: Program<'info, System>,

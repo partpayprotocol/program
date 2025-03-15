@@ -6,7 +6,7 @@ use state::{
     funded::FunderEquipmentResponse
 };
 
-declare_id!("PARcfURNnk9kGkMieyTHEjsFKbRrnP5eRL7iZW9QqXY");
+declare_id!("PARnAABYT9Kuq3sgokcr4Tyz6FY7DUKpiy2Rjrp3jSh");
 
 pub mod constants;
 pub mod errors;
@@ -19,6 +19,7 @@ use instructions::*;
 #[program]
 pub mod partpay {
     use super::*;
+    
     pub fn create_marketplace(
         ctx: Context<CreateMarketplace>,
         name: String,
@@ -106,6 +107,7 @@ pub mod partpay {
         installment_frequency: InstallmentFrequency,
         deposit: u64,
         insurance_premium: Option<u64>,
+        funder_unique_id: Option<Pubkey>
     ) -> Result<()> {
         contract::create_contract(
             ctx,
@@ -114,6 +116,7 @@ pub mod partpay {
             installment_frequency,
             deposit,
             insurance_premium,
+            funder_unique_id
         )
     }
 
@@ -149,14 +152,48 @@ pub mod partpay {
         equipment::get_funded_equipment(ctx)
     }
 
-    pub fn fund_equipment(
-        ctx: Context<FundEquipment>,
+    pub fn fund_equipment_for_listing(
+        ctx: Context<FundEquipmentForListing>,
         quantity_to_fund: u64,
         minimum_deposit: u64,
         duration_seconds: i64,
-        funder_price: u64,
+        unique_id: Pubkey,
     ) -> Result<()> {
-        equipment::fund_equipment(ctx, quantity_to_fund, minimum_deposit, duration_seconds, funder_price)
+        equipment::fund_equipment_for_listing(ctx, quantity_to_fund, minimum_deposit, duration_seconds, unique_id)
+    }
+
+    pub fn fund_equipment_for_borrower_no_payment(
+        ctx: Context<FundEquipmentForBorrowerNoPayment>,
+        quantity_to_fund: u64,
+        borrower: Pubkey,
+        unique_id: Pubkey
+    ) -> Result<()> {
+        equipment::fund_equipment_for_borrower_no_payment(ctx, quantity_to_fund, borrower, unique_id)
+    }
+
+    pub fn fund_equipment_for_borrower_with_payment(
+        ctx: Context<FundEquipmentForBorrowerWithPayment>,
+        quantity_to_fund: u64,
+        borrower: Pubkey,
+        minimum_deposit: u64,
+        duration_seconds: i64,
+        unique_id: Pubkey
+    ) -> Result<()> {
+        equipment::fund_equipment_for_borrower_with_payment(ctx, quantity_to_fund, borrower, minimum_deposit, duration_seconds, unique_id)
+    }
+
+    pub fn confirm_delivery(
+        ctx: Context<ConfirmDelivery>,
+        unique_id: Pubkey
+    ) -> Result<()> {
+        equipment::confirm_delivery(ctx, unique_id)
+    }
+
+    pub fn confirm_funded_delivery(
+        ctx: Context<ConfirmFundedDelivery>,
+        unique_id: Pubkey
+    ) -> Result<()> {
+        equipment::confirm_funded_delivery(ctx, unique_id)
     }
 
     pub fn view_credit_score(ctx: Context<ViewCreditScore>) -> Result<u64> {

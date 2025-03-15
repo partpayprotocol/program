@@ -20,7 +20,8 @@ idl-build = [
 ]
 
 [dependencies]
-anchor-lang = "0.30.1"
+anchor-lang = { version = "=0.30.1", features = ["init-if-needed"] }
 chrono = "0.4.39"
 mpl-core = "0.8.0"
-anchor-spl = "0.30.1"
+anchor-spl = { version = "0.30.1", features = ["token"] }
+

@@ -10,6 +10,14 @@ pub struct GetVendor<'info> {
 pub fn get_vendor(ctx: Context<GetVendor>) -> Result<()> {
     let vendor = &ctx.accounts.vendor;
     
+    // msg!("Vendor Details:");
+    // msg!("Name: {}", vendor.name);
+    // msg!("URI: {}", vendor.uri);
+    // msg!("Equipment Count: {}", vendor.equipment_count);
+    // msg!("Authority: {}", vendor.authority);
+    // msg!("Collection: {}", vendor.collection);
+    // msg!("Unique ID: {}", vendor.unique_id);
+    
     if let Some(marketplace) = vendor.marketplace {
         msg!("Marketplace: {}", marketplace);
     } else {

@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { CheckmarkIcon } from "react-hot-toast";
@@ -12,13 +13,16 @@ const HomeComponent = () => {
     };
 
     const roles = [
+        { id: 'borrower', label: 'Borrower', description: 'Receive funding' },
         { id: 'upload-equipment', label: 'Vendor', description: 'Sell products or services' },
         { id: 'funder', label: 'Funder', description: 'Provide financial backing' },
-        { id: 'equipments', label: 'Borrower', description: 'Receive funding' }
     ];
     return (
-        <div className="bg-white h-full">
-            <div className="w-full h-screen bg-gray-50 flex justify-center items-center p-4">
+        <div className="bg-gray-50 h-full">
+            <div className="p-4">
+            <Image src="/darklogo.png" alt="logo" className="w-[120px]" width={100} height={100}/>
+            </div>
+            <div className="w-full h-[91%]  flex justify-center items-center p-4">
                 <div className="w-full max-w-md bg-white rounded-xl shadow-lg overflow-hidden">
                     <div className="p-6">
                         <div className="space-y-4">

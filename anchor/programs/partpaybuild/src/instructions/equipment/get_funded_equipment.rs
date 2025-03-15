@@ -13,6 +13,7 @@ pub fn get_funded_equipment<'info>(ctx: Context<'_, '_, 'info, 'info, GetFunderE
     let funder_key = ctx.accounts.funder.key();
     let mut equipment_list: Vec<FunderEquipmentInfo> = Vec::new();
 
+    // Convert remaining_accounts into Account<Equipment>
     let mut equipment_accounts: Vec<Account<'info, Equipment>> = Vec::new();
 
     for account_info in ctx.remaining_accounts.iter() {
