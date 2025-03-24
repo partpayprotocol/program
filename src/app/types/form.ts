@@ -5,10 +5,10 @@ export interface EquipmentUploadValues {
   totalAmount: string;
   quantity: string;
   pricePerUnit: string;
-  minimumDeposit: string;
+  minimumDeposit?: string;
   totalQuantity: string;
   maxDuration: string;
-  paymentPreference: string;
+  paymentPreference: "part" | "full" | "both";
 };
 
 export interface RequestEquipmentFormInputs {
@@ -18,6 +18,6 @@ export interface RequestEquipmentFormInputs {
   budgetRange?: string;
   image?: string;
   // urgency: "urgent" | "normal" | "flexible";
-  preferredPayment: "installments" | "full" | "either";
+  preferredPayment: "installments" | "full" | "both";
   additionalDetails?: string;
 }

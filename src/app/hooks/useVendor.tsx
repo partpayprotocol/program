@@ -7,7 +7,7 @@ import { usePartpayProgram } from './usePartpayProgram'
 import { useWallet } from '@solana/wallet-adapter-react'
 import axios from 'axios'
 import { VendorArgs } from '../types/vendor'
-import { apiUrl, MPL_CORE_PROGRAM_ID } from '../utils/constant'
+import { apiUrl, MPL_CORE_PROGRAM_ID } from '@/utils/constant'
 
 export function useVendorAccount() {
     const { cluster } = useCluster();

@@ -1,4 +1,4 @@
-import BorrowerHeader from '@/components/borrower/BorrowerHeader'
+import BorrowerHeader from '@/components/header/BorrowerHeader'
 import EquipmentIdComponent from '@/components/Equipment/EquipmentIdComponent'
 import React from 'react'
 

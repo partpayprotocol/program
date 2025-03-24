@@ -1,6 +1,6 @@
 "use client"
 import BorrowerComponent from "@/components/borrower/BorrowerComponent"
-import BorrowerHeader from "@/components/borrower/BorrowerHeader"
+import BorrowerHeader from "@/components/header/BorrowerHeader"
 
 export default function Borrower() {
   return (

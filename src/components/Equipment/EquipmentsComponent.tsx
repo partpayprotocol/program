@@ -2,8 +2,8 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import Item from './Item';
-import { apiUrl } from '@/app/utils/constant';
 import Loading from '../Loading';
+import { apiUrl } from '@/utils/constant';
 
 interface Equipment {
   equipmentPda: string;

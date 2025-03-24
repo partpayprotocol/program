@@ -2,7 +2,7 @@ import './globals.css'
 import {ClusterProvider} from '@/app/context/cluster-data-access'
 import {SolanaProvider} from '@/app/context/solana-provider'
 import {ReactQueryProvider} from './react-query-provider'
-import { PageProvider } from './context/PageContext'
+import { PageProvider } from './context/AppContext'
 
 export const metadata = {
   title: 'PARTPAY',

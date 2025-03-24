@@ -7,11 +7,11 @@ import { EquipmentArgs } from "../types/equipment";
 import { Keypair, PublicKey, SystemProgram, SYSVAR_RENT_PUBKEY, Transaction } from "@solana/web3.js";
 import { ASSOCIATED_TOKEN_PROGRAM_ID, createAssociatedTokenAccountInstruction, getAssociatedTokenAddress, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import * as anchor from '@coral-xyz/anchor';
-import { apiUrl, MPL_CORE_PROGRAM_ID, USDC_MINT } from "../utils/constant";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { ensureATA } from "../utils/lib";
 import { FunderArgs } from "../types/funder";
+import { ensureATA } from "@/utils/lib";
+import { apiUrl, USDC_MINT } from "@/utils/constant";
 
 export function useEquipmentAccount() {
     const { cluster } = useCluster();

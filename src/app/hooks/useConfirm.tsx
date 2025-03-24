@@ -7,10 +7,10 @@ import { ConfirmDeliveryToBorrower, ContractArgs } from "../types/contract";
 import { PublicKey, SystemProgram } from "@solana/web3.js";
 import * as anchor from '@coral-xyz/anchor';
 import axios from "axios";
-import { apiUrl, USDC_MINT } from "../utils/constant";
 import toast from "react-hot-toast";
 import { TOKEN_2022_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID } from "@solana/spl-token";
-import { ensureATA, getInstalmentFrequency } from "../utils/lib";
+import { apiUrl, USDC_MINT } from "@/utils/constant";
+import { ensureATA } from "@/utils/lib";
 
 export function useConfirmAccount() {
     const { cluster } = useCluster();

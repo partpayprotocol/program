@@ -7,10 +7,9 @@ import { EquipmentArgs } from "../types/equipment";
 import { Keypair, PublicKey, SystemProgram, SYSVAR_RENT_PUBKEY, Transaction } from "@solana/web3.js";
 import { ASSOCIATED_TOKEN_PROGRAM_ID, createAssociatedTokenAccountInstruction, getAssociatedTokenAddress, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import * as anchor from '@coral-xyz/anchor';
-import { apiUrl, MPL_CORE_PROGRAM_ID, USDC_MINT } from "../utils/constant";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { ensureATA } from "../utils/lib";
+import { apiUrl, MPL_CORE_PROGRAM_ID, USDC_MINT } from "@/utils/constant";
 
 export function useEquipmentAccount() {
     const { cluster } = useCluster();
@@ -143,153 +142,153 @@ export function useEquipmentAccount() {
         },
     });
 
-    const fundEquipment = useMutation({
-        mutationKey: ["partpay", "fund-equipment", { cluster }],
-        mutationFn: async ({
-          wallet,
-          equipmentPda,
-          vendorPda,
-          quantity,
-          minimumAmount,
-          durationSeconds,
-          funderPrice,
-        }: {
-          wallet: { publicKey: PublicKey };
-          equipmentPda: string;
-          vendorPda: string;
-          quantity: number;
-          minimumAmount: number;
-          durationSeconds: number;
-          funderPrice: number;
-        }) => {
-          if (!publicKey || !signTransaction || !connected) {
-            throw new Error("Wallet not connected");
-          }
+    // const fundEquipment = useMutation({
+    //     mutationKey: ["partpay", "fund-equipment", { cluster }],
+    //     mutationFn: async ({
+    //       wallet,
+    //       equipmentPda,
+    //       vendorPda,
+    //       quantity,
+    //       minimumAmount,
+    //       durationSeconds,
+    //       funderPrice,
+    //     }: {
+    //       wallet: { publicKey: PublicKey };
+    //       equipmentPda: string;
+    //       vendorPda: string;
+    //       quantity: number;
+    //       minimumAmount: number;
+    //       durationSeconds: number;
+    //       funderPrice: number;
+    //     }) => {
+    //       if (!publicKey || !signTransaction || !connected) {
+    //         throw new Error("Wallet not connected");
+    //       }
       
-          console.log("Wallet Public Key:", wallet.publicKey.toBase58());
-          console.log("Vendor PDA:", vendorPda);
-          console.log("Equipment PDA:", equipmentPda);
+    //       console.log("Wallet Public Key:", wallet.publicKey.toBase58());
+    //       console.log("Vendor PDA:", vendorPda);
+    //       console.log("Equipment PDA:", equipmentPda);
       
-          const connection = program.provider.connection;
+    //       const connection = program.provider.connection;
       
-          // Fetch equipment state to validate
-          const equipmentAccount = await program.account.equipment.fetch(new PublicKey(equipmentPda));
-          console.log("Equipment State:", {
-            fundedQuantity: equipmentAccount.fundedQuantity.toString(),
-            paymentPreference: equipmentAccount.paymentPreference,
-          });
+    //       // Fetch equipment state to validate
+    //       const equipmentAccount = await program.account.equipment.fetch(new PublicKey(equipmentPda));
+    //       console.log("Equipment State:", {
+    //         fundedQuantity: equipmentAccount.fundedQuantity.toString(),
+    //         paymentPreference: equipmentAccount.paymentPreference,
+    //       });
       
-          // Validate equipment state
-          const isFundable =
-            equipmentAccount.fundedQuantity.eq(new anchor.BN(0)) &&
-            (equipmentAccount.paymentPreference.full !== undefined || equipmentAccount.paymentPreference.both !== undefined);
-          if (!isFundable) {
-            throw new Error(
-              `Equipment cannot be funded: funded_quantity = ${equipmentAccount.fundedQuantity.toString()}, payment_preference = ${
-                Object.keys(equipmentAccount.paymentPreference)[0]
-              }`
-            );
-          }
+    //       // Validate equipment state
+    //       const isFundable =
+    //         equipmentAccount.fundedQuantity.eq(new anchor.BN(0)) &&
+    //         (equipmentAccount.paymentPreference.full !== undefined || equipmentAccount.paymentPreference.both !== undefined);
+    //       if (!isFundable) {
+    //         throw new Error(
+    //           `Equipment cannot be funded: funded_quantity = ${equipmentAccount.fundedQuantity.toString()}, payment_preference = ${
+    //             Object.keys(equipmentAccount.paymentPreference)[0]
+    //           }`
+    //         );
+    //       }
       
-          const funderATA = await getAssociatedTokenAddress(
-            USDC_MINT,
-            wallet.publicKey,
-            true,
-            TOKEN_PROGRAM_ID, // Use Token 2022 for consistency
-            ASSOCIATED_TOKEN_PROGRAM_ID
-          );
-          const vendorPubkey = new PublicKey("45S7j2rvWhwzeuQkPaEf3Gatvd2mD4X29bBkVYB8CjuX");
-          const vendorATA = await getAssociatedTokenAddress(
-            USDC_MINT,
-            vendorPubkey,
-            true,
-            TOKEN_PROGRAM_ID,
-            ASSOCIATED_TOKEN_PROGRAM_ID
-          );
+    //       const funderATA = await getAssociatedTokenAddress(
+    //         USDC_MINT,
+    //         wallet.publicKey,
+    //         true,
+    //         TOKEN_PROGRAM_ID, // Use Token 2022 for consistency
+    //         ASSOCIATED_TOKEN_PROGRAM_ID
+    //       );
+    //       const vendorPubkey = new PublicKey("45S7j2rvWhwzeuQkPaEf3Gatvd2mD4X29bBkVYB8CjuX");
+    //       const vendorATA = await getAssociatedTokenAddress(
+    //         USDC_MINT,
+    //         vendorPubkey,
+    //         true,
+    //         TOKEN_PROGRAM_ID,
+    //         ASSOCIATED_TOKEN_PROGRAM_ID
+    //       );
       
-          const tx = new Transaction();
-          const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash("finalized");
-          tx.recentBlockhash = blockhash;
-          tx.feePayer = wallet.publicKey;
+    //       const tx = new Transaction();
+    //       const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash("finalized");
+    //       tx.recentBlockhash = blockhash;
+    //       tx.feePayer = wallet.publicKey;
       
-          // Check and add ATA creation instructions if needed
-          if (!(await connection.getAccountInfo(funderATA))) {
-            console.log(`Funder ATA ${funderATA.toBase58()} not initialized, adding creation...`);
-            tx.add(
-              createAssociatedTokenAccountInstruction(
-                wallet.publicKey,
-                funderATA,
-                wallet.publicKey,
-                USDC_MINT,
-                TOKEN_PROGRAM_ID,
-                ASSOCIATED_TOKEN_PROGRAM_ID
-              )
-            );
-          }
-          if (!(await connection.getAccountInfo(vendorATA))) {
-            console.log(`Vendor ATA ${vendorATA.toBase58()} not initialized, adding creation...`);
-            tx.add(
-              createAssociatedTokenAccountInstruction(
-                wallet.publicKey,
-                vendorATA,
-                vendorPubkey,
-                USDC_MINT,
-                TOKEN_PROGRAM_ID,
-                ASSOCIATED_TOKEN_PROGRAM_ID
-              )
-            );
-          }
+    //       // Check and add ATA creation instructions if needed
+    //       if (!(await connection.getAccountInfo(funderATA))) {
+    //         console.log(`Funder ATA ${funderATA.toBase58()} not initialized, adding creation...`);
+    //         tx.add(
+    //           createAssociatedTokenAccountInstruction(
+    //             wallet.publicKey,
+    //             funderATA,
+    //             wallet.publicKey,
+    //             USDC_MINT,
+    //             TOKEN_PROGRAM_ID,
+    //             ASSOCIATED_TOKEN_PROGRAM_ID
+    //           )
+    //         );
+    //       }
+    //       if (!(await connection.getAccountInfo(vendorATA))) {
+    //         console.log(`Vendor ATA ${vendorATA.toBase58()} not initialized, adding creation...`);
+    //         tx.add(
+    //           createAssociatedTokenAccountInstruction(
+    //             wallet.publicKey,
+    //             vendorATA,
+    //             vendorPubkey,
+    //             USDC_MINT,
+    //             TOKEN_PROGRAM_ID,
+    //             ASSOCIATED_TOKEN_PROGRAM_ID
+    //           )
+    //         );
+    //       }
       
-          // Add fundEquipment instruction
-          const txBuilder = await program.methods
-            .fundEquipment(
-              new anchor.BN(quantity),
-              new anchor.BN(minimumAmount),
-              new anchor.BN(durationSeconds),
-              new anchor.BN(funderPrice) // Note: Requires program update to accept this
-            )
-            .accounts({
-              equipment: new PublicKey(equipmentPda),
-              vendor: new PublicKey(vendorPda),
-              funder: wallet.publicKey,
-              usdcMint: USDC_MINT,
-              funderTokenAccount: funderATA,
-              vendorTokenAccount: vendorATA,
-              tokenProgram: TOKEN_PROGRAM_ID,
-              systemProgram: SystemProgram.programId,
-              associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-            });
-          tx.add(await txBuilder.instruction());
+    //       // Add fundEquipment instruction
+    //       const txBuilder = await program.methods
+    //         .fundEquipment(
+    //           new anchor.BN(quantity),
+    //           new anchor.BN(minimumAmount),
+    //           new anchor.BN(durationSeconds),
+    //           new anchor.BN(funderPrice) // Note: Requires program update to accept this
+    //         )
+    //         .accounts({
+    //           equipment: new PublicKey(equipmentPda),
+    //           vendor: new PublicKey(vendorPda),
+    //           funder: wallet.publicKey,
+    //           usdcMint: USDC_MINT,
+    //           funderTokenAccount: funderATA,
+    //           vendorTokenAccount: vendorATA,
+    //           tokenProgram: TOKEN_PROGRAM_ID,
+    //           systemProgram: SystemProgram.programId,
+    //           associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+    //         });
+    //       tx.add(await txBuilder.instruction());
       
-          const signedTx = await signTransaction(tx);
-          console.log("Funding Tx Instructions:", signedTx.instructions.map(i => i.programId.toBase58()));
-          const signature = await connection.sendRawTransaction(signedTx.serialize(), {
-            skipPreflight: true, // Skip simulation as before
-            preflightCommitment: "finalized",
-          });
-          await connection.confirmTransaction(
-            { signature, blockhash, lastValidBlockHeight },
-            "finalized"
-          );
+    //       const signedTx = await signTransaction(tx);
+    //       console.log("Funding Tx Instructions:", signedTx.instructions.map(i => i.programId.toBase58()));
+    //       const signature = await connection.sendRawTransaction(signedTx.serialize(), {
+    //         skipPreflight: true, // Skip simulation as before
+    //         preflightCommitment: "finalized",
+    //       });
+    //       await connection.confirmTransaction(
+    //         { signature, blockhash, lastValidBlockHeight },
+    //         "finalized"
+    //       );
       
-          const funderInfoData = {
-            equipmentPda,
-            funderPubkey: wallet.publicKey.toBase58(),
-            quantity,
-            minimumDeposit: minimumAmount / 1e6,
-            durationSeconds,
-            funderPrice,
-          };
+    //       const funderInfoData = {
+    //         equipmentPda,
+    //         funderPubkey: wallet.publicKey.toBase58(),
+    //         quantity,
+    //         minimumDeposit: minimumAmount / 1e6,
+    //         durationSeconds,
+    //         funderPrice,
+    //       };
       
-          await axios.post(`${apiUrl}/funders`, funderInfoData, {
-            headers: { 'Content-Type': 'application/json' },
-          });
+    //       await axios.post(`${apiUrl}/funders`, funderInfoData, {
+    //         headers: { 'Content-Type': 'application/json' },
+    //       });
       
-          return signature;
-        },
-        onSuccess: (signature) => toast.success(`Equipment funded: ${signature}`),
-        onError: (error) => toast.error(`Funding failed: ${error.message}`),
-      });
+    //       return signature;
+    //     },
+    //     onSuccess: (signature) => toast.success(`Equipment funded: ${signature}`),
+    //     onError: (error) => toast.error(`Funding failed: ${error.message}`),
+    //   });
 
     const getEquipment = useQuery({
         queryKey: ['equipment', 'fetch', publicKey?.toBase58()],
@@ -351,7 +350,6 @@ export function useEquipmentAccount() {
 
     return {
         initializeEquipment,
-        fundEquipment,
         getEquipment,
         getAllVendorEquipment,
     };

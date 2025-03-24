@@ -1,6 +1,6 @@
 "use client"
-import BorrowerHeader from "@/components/borrower/BorrowerHeader";
-import RequestEquipmet from "@/components/borrower/RequestEquipmet";
+import BorrowerHeader from "@/components/header/BorrowerHeader";
+import RequestEquipmet from "@/components/borrower/RequestedEquipment";
 
 export default function RequestPage() {
     return (

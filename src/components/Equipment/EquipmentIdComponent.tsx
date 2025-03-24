@@ -4,14 +4,14 @@ import React, { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { apiUrl } from "@/app/utils/constant";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useEquipmentAccount } from "@/app/hooks/useEquipment";
 import { useContractAccount } from "@/app/hooks/useContract";
 import { PublicKey } from "@solana/web3.js";
-import { addNewUser, durationOption } from "@/app/utils/lib";
 import { usePartpayProgram } from "@/app/hooks/usePartpayProgram";
 import * as anchor from '@coral-xyz/anchor';
+import { apiUrl } from "@/utils/constant";
+import { addNewUser } from "@/utils/lib";
 
 interface Equipment {
   equipmentPda: string;
@@ -34,7 +34,6 @@ const EquipmentIdComponent = () => {
   const router = useRouter();
   const { equipmentId } = useParams();
   const { publicKey } = useWallet();
-  const { fundEquipment } = useEquipmentAccount();
   const { initializeContract } = useContractAccount();
   const { program } = usePartpayProgram();
 
@@ -42,10 +41,10 @@ const EquipmentIdComponent = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [view, setView] = useState<"part" | "fund">("part");
-  const [deposit, setDeposit] = useState(0); // In USDC, default to minimumDeposit or 1 if 0
+  const [deposit, setDeposit] = useState(0);
   const [funderQuantity, setFunderQuantity] = useState(1);
-  const [funderMinDeposit, setFunderMinDeposit] = useState(0); // In USDC
-  const [funderPrice, setFunderPrice] = useState(0); // In USDC, funder's resale price
+  const [funderMinDeposit, setFunderMinDeposit] = useState(0);
+  const [funderPrice, setFunderPrice] = useState(0);
   const [funderDuration, setFunderDuration] = useState(604800);
 
   const fetchEquipment = async () => {
@@ -129,7 +128,7 @@ const EquipmentIdComponent = () => {
       return;
     }
 
-    if (funderMinDeposit < (equipment.minimumDeposit || 1)) { // Use 1 if minimum is 0
+    if (funderMinDeposit < (equipment.minimumDeposit || 1)) {
       toast.error(`Minimum deposit must be at least $${(equipment.minimumDeposit || 1).toLocaleString()}`);
       return;
     }

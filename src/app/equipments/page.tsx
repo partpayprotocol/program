@@ -1,5 +1,5 @@
 "use client"
-import BorrowerHeader from "@/components/borrower/BorrowerHeader";
+import BorrowerHeader from "@/components/header/BorrowerHeader";
 import EquipmentsComponent from "@/components/Equipment/EquipmentsComponent";
 
 export default function Equipments() {
